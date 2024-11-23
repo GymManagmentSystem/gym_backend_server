@@ -9,7 +9,9 @@ import com.example.schedule.repo.ScheduleRepo;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,41 +27,75 @@ public class SchdeuleService {
     @Autowired
     ModelMapper modelMapper;
 
-    public ScheduleExerciseDto addNewSchedule(ScheduleExerciseDto scheduleExerciseDto) {
-        ScheduleExerciseDto savedScheduleDto = new ScheduleExerciseDto();
-
+    @Transactional(rollbackFor = Exception.class)
+    public List<ScheduleExerciseDto> addNewSchedule(List<ScheduleExerciseDto> scheduleExerciseDtoList) {
+        List<ScheduleExerciseDto> savedScheduleList = new ArrayList<>();
         try{
-            ScheduleModel scheduleModel =scheduleRepo.save(modelMapper.map(scheduleExerciseDto.getSchedule(), ScheduleModel.class));
-            ScheduleDto scheduleDto = modelMapper.map(scheduleModel, ScheduleDto.class);
-            System.out.println("schdeule dto is " + scheduleDto);
-            savedScheduleDto.setSchedule(scheduleDto);
-            assert scheduleModel != null;
+            for(ScheduleExerciseDto scheduleExerciseDto : scheduleExerciseDtoList){
+                ScheduleExerciseDto savedScheduleDto = new ScheduleExerciseDto();
+                scheduleExerciseDto.getSchedule().setActive(true);
+                Integer invalidatePreviousSchedules=scheduleRepo.setIsActiveFalse(scheduleExerciseDto.getSchedule().getMemberId(),scheduleExerciseDto.getSchedule().getScheduleType());
+                if(invalidatePreviousSchedules != 1){
+                    List<Integer> initialScheduleList=scheduleRepo.findFirstSchedules(scheduleExerciseDto.getSchedule().getMemberId(),scheduleExerciseDto.getSchedule().getScheduleType());
+                    assert initialScheduleList != null;
+                    if (!initialScheduleList.isEmpty()){
+                        throw new RuntimeException("SUF"); //SCHEDULE UPDATION FAILED
+                    }
+                }
+                ScheduleModel scheduleModel =scheduleRepo.save(modelMapper.map(scheduleExerciseDto.getSchedule(), ScheduleModel.class));
 
-            List<ExerciseDto> exerciseList=scheduleExerciseDto.getExerciseList();
-            System.out.println(scheduleDto.getScheduleId());
-            List<ScheduleExerciseModel> scheduleExerciseModelList=new ArrayList<>();
+                ScheduleDto scheduleDto = modelMapper.map(scheduleModel, ScheduleDto.class);
+                savedScheduleDto.setSchedule(scheduleDto);
+                assert scheduleModel != null;
 
-            for(ExerciseDto exerciseDto:exerciseList){
-                ScheduleExerciseModel scheduleExerciseModel=new ScheduleExerciseModel();
-                scheduleExerciseModel.setScheduleId(scheduleDto.getScheduleId());
-                scheduleExerciseModel.setExerciseName(exerciseDto.getExerciseName());
-                scheduleExerciseModel.setReps(exerciseDto.getReps());
-                scheduleExerciseModel.setSets(exerciseDto.getSets());
-                scheduleExerciseModelList.add(scheduleExerciseModel);
+                List<ExerciseDto> exerciseList=scheduleExerciseDto.getExerciseList();
+                List<ScheduleExerciseModel> scheduleExerciseModelList=new ArrayList<>();
+
+                for(ExerciseDto exerciseDto:exerciseList){
+                    ScheduleExerciseModel scheduleExerciseModel=new ScheduleExerciseModel();
+                    scheduleExerciseModel.setScheduleId(scheduleDto.getScheduleId());
+                    scheduleExerciseModel.setExerciseName(exerciseDto.getExerciseName());
+                    scheduleExerciseModel.setReps(exerciseDto.getReps());
+                    scheduleExerciseModel.setSets(exerciseDto.getSets());
+                    scheduleExerciseModelList.add(scheduleExerciseModel);
+                }
+                List<ScheduleExerciseModel> savedSheduleExerciseModelList=scheduleExerciseRepo.saveAll(scheduleExerciseModelList);
+                List<ExerciseDto> savedScheduleExerciseDtoList=modelMapper.map(savedSheduleExerciseModelList,new TypeToken<List<ExerciseDto>>(){}.getType());
+                savedScheduleDto.setExerciseList(savedScheduleExerciseDtoList);
+                savedScheduleList.add(savedScheduleDto);
             }
-            List<ScheduleExerciseModel> savedSheduleExerciseModelList=scheduleExerciseRepo.saveAll(scheduleExerciseModelList);
-            List<ExerciseDto> savedScheduleExerciseDtoList=modelMapper.map(savedSheduleExerciseModelList,new TypeToken<List<ExerciseDto>>(){}.getType());
-            savedScheduleDto.setExerciseList(savedScheduleExerciseDtoList);
-            System.out.println("saved schedule data: "+savedScheduleDto);
-            return savedScheduleDto;
+            return savedScheduleList;
 
-        }catch(Exception e){
+
+        }catch (InvalidDataAccessResourceUsageException e){
+            throw new RuntimeException("IDARUE");//invalidate Data Access Resource
+        }
+        catch(Exception e){
             throw new RuntimeException(e.getMessage());
         }
 
     }
 
+    public List<ScheduleExerciseDto> getSchedulesById(Integer memberId,boolean isActive) {
+        try{
+            List<ScheduleExerciseDto> scheduleExerciseList=new ArrayList<>();
+            List<ScheduleModel> currentScheduleList=scheduleRepo.getSchedulesById(memberId,isActive);
+            for(ScheduleModel scheduleModel:currentScheduleList){
+                ScheduleExerciseDto scheduleExerciseDto=new ScheduleExerciseDto();
+                scheduleExerciseDto.setSchedule(modelMapper.map(scheduleModel, ScheduleDto.class));
+                List<ScheduleExerciseModel> scheduleExerciseModel=scheduleExerciseRepo.getExercisesListByScheduleId(scheduleModel.getScheduleId());
+                scheduleExerciseDto.setExerciseList(modelMapper.map(scheduleExerciseModel,new TypeToken<List<ExerciseDto>>(){}.getType()));
+                scheduleExerciseList.add(scheduleExerciseDto);
+            }
+            return scheduleExerciseList;
 
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    
 
 
 }

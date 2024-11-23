@@ -12,4 +12,5 @@ public class ScheduleDto {
     private int scheduleId;
     private String scheduleType;
     private String startDate;
+    private boolean isActive;
 }

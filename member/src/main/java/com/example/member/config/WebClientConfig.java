@@ -16,6 +16,6 @@ public class WebClientConfig {
 
     @Bean
     public WebClient PaymentWebClient(){
-        return webClientBuilder().baseUrl("http://payment/api/v1/payments").build();
+        return webClientBuilder().baseUrl("http://apigateway/api/v1/payments").build();
     }
 }

@@ -21,6 +21,7 @@
     <module>member</module>
     <module>staff_member</module>
       <module>discoveryServer</module>
+      <module>apiGateway</module>
   </modules>
 
   <properties>

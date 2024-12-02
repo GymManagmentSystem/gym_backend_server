@@ -22,6 +22,7 @@
     <module>staff_member</module>
       <module>discoveryServer</module>
       <module>apiGateway</module>
+    <module>security-service</module>
   </modules>
 
   <properties>

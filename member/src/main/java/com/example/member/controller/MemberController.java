@@ -11,6 +11,7 @@ import com.example.member.dto.MemberRegistrationDto;
 import com.example.member.service.MemberService;
 import com.example.payment.dto.PaymentDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +36,17 @@ public class MemberController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<MemberResponse> addNewMember(@RequestBody MemberRegistrationDto memberRegistrationDto){
+    public ResponseEntity<MemberResponse> addNewMember(@RequestBody MemberRegistrationDto memberRegistrationDto, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
+
+        String jwtToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            jwtToken = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Authorization header is missing or invalid"));
+        }
+
+
+
         MemberDto memberDt0=new MemberDto();
         memberDt0.setFirstName(memberRegistrationDto.getFirstName());
         memberDt0.setLastName(memberRegistrationDto.getLastName());
@@ -56,7 +67,7 @@ public class MemberController {
 
 
         try{
-            MemberRegistrationDto savedMember= memberService.addNewMember(memberDt0,paymentDto);
+            MemberRegistrationDto savedMember= memberService.addNewMember(memberDt0,paymentDto,jwtToken);
             return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessResponse<MemberRegistrationDto>(savedMember));
         }catch(Exception e){
             if(e.getMessage().equals("NE")){
@@ -86,9 +97,15 @@ public class MemberController {
     }
 
     @GetMapping("/{memberId}")
-    public ResponseEntity<MemberResponse> getMemberDetailsById(@PathVariable("memberId") String memberId){
+    public ResponseEntity<MemberResponse> getMemberDetailsById(@PathVariable("memberId") String memberId,@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
+        String jwtToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            jwtToken = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Authorization header is missing or invalid"));
+        }
         try{
-            MemberDetailsDto memberDetails=memberService.getMemberDetails(Integer.parseInt(memberId));
+            MemberDetailsDto memberDetails=memberService.getMemberDetails(Integer.parseInt(memberId),jwtToken);
             return ResponseEntity.status(HttpStatus.FOUND).body(new SuccessResponse<MemberDetailsDto>(memberDetails));
         }catch(Exception e){
             if(e.getMessage().equals("MNF")){

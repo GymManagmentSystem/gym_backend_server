@@ -46,6 +46,7 @@ public class SheduleController {
             List<ScheduleExerciseDto> scheduleList=schdeuleService.getSchedulesById(1,true);
             return ResponseEntity.status(HttpStatus.FOUND).body(new SuccessResponse<ScheduleExerciseDto>(scheduleList));
         }catch(Exception e){
+            System.out.println("Exception is "+e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(e.getMessage()));
         }
     }
@@ -57,6 +58,7 @@ public class SheduleController {
             List<ScheduleExerciseDto> scheduleList=schdeuleService.getSchedulesById(1,false);
             return ResponseEntity.status(HttpStatus.FOUND).body(new SuccessResponse<ScheduleExerciseDto>(scheduleList));
         }catch(Exception e){
+            System.out.println("Exception is "+e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(e.getMessage()));
         }
     }

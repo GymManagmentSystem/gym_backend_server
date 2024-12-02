@@ -55,7 +55,7 @@ public class MemberService {
 
 
     @Transactional(rollbackFor = Exception.class)
-    public MemberRegistrationDto addNewMember(MemberDto memberDto, PaymentDto paymentDto) {
+    public MemberRegistrationDto addNewMember(MemberDto memberDto, PaymentDto paymentDto,String jwtToken) {
         String name = memberDto.getFirstName();
         String email = memberDto.getEmail();
         String mobileNumber = memberDto.getContactNumber();
@@ -80,6 +80,7 @@ public class MemberService {
 
             ResponseEntity<PaymentClassResponse<PaymentDto>> paymentInfo = paymentWebClient.post()
                     .uri(uriBuilder -> uriBuilder.path("/{memberId}").build(latestMember.getMemberId()))
+                    .headers(headers -> headers.setBearerAuth(jwtToken))
                     .bodyValue(paymentDto)
                     .retrieve()
                     .toEntity(new ParameterizedTypeReference<PaymentClassResponse<PaymentDto>>() {})
@@ -115,7 +116,8 @@ public class MemberService {
 
     }
 
-    public MemberDetailsDto getMemberDetails(Integer memberId) {
+    public MemberDetailsDto getMemberDetails(Integer memberId,String jwtToken) {
+
         try{
             boolean memeberExist=memberRepo.findById(memberId).isPresent();
             if(!memeberExist){
@@ -128,6 +130,7 @@ public class MemberService {
 
             ResponseEntity<PaymentClassResponse<PaymentDto>>  paymentList = paymentWebClient.get()
                     .uri(uriBuilder -> uriBuilder.path("/{memberId}").build(memberId))
+                    .headers(headers -> headers.setBearerAuth(jwtToken))
                     .retrieve()
                     .toEntity(new ParameterizedTypeReference<PaymentClassResponse<PaymentDto>>() {})
                     .block();

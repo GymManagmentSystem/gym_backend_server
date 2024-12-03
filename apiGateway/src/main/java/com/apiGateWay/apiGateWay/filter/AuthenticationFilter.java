@@ -35,12 +35,11 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                 if(authHeader!=null && authHeader.startsWith("Bearer ")){
                     authHeader=authHeader.substring(7);
                 }
-
                     String finalToken=authHeader;
                     jwtUtill.vlidateToken(finalToken);
                 }catch(Exception e){
                     System.out.println(e.getMessage());
-                    throw new RuntimeException(e.getMessage());
+                    throw new RuntimeException("something went wrong");
                 }
             }
             return chain.filter(exchange);

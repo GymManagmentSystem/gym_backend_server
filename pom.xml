@@ -19,7 +19,7 @@
     <module>payment</module>
     <module>pakage</module>
     <module>member</module>
-    <module>staff_member</module>
+    <module>staffMember</module>
       <module>discoveryServer</module>
       <module>apiGateway</module>
     <module>security-service</module>

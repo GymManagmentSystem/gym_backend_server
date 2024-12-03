@@ -4,6 +4,7 @@ package com.example.security_service.controller;
 import com.example.security_service.dto.UserCredentialDto;
 import com.example.security_service.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,8 +27,14 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public UserCredentialDto addNewUserCredentials(@RequestBody UserCredentialDto userCredentialDto) {
-        return authService.addNewUserCredentials(userCredentialDto);
+    public String addNewUserCredentials(@RequestBody UserCredentialDto userCredentialDto) {
+        try{
+            authService.addNewUserCredentials(userCredentialDto);
+            return "User credential added successfully";
+
+        }catch(Exception e){
+            throw new BadCredentialsException(e.getMessage());
+        }
     }
 
 

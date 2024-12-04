@@ -1,10 +1,7 @@
 package com.example.staffMember.model;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,11 +15,14 @@ public class StaffMemberModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int staffMemberId;
+    @Column(nullable = false)
     private String firstName;
     private String lastName;
+    @Column(nullable = false)
     private String contactNumber;
     private String email;
     private int age;
+    @Column(nullable = false)
     private String gender;
     private String address;
     private String position;

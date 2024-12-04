@@ -5,13 +5,15 @@ import com.example.staffMember.customResponse.ErrorResponse;
 import com.example.staffMember.customResponse.StaffMemberResponse;
 import com.example.staffMember.customResponse.SuccessResponse;
 import com.example.staffMember.dto.StaffMemberDto;
+import com.example.staffMember.dto.StaffMemberTableDetails;
 import com.example.staffMember.service.StaffMemberService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -33,6 +35,24 @@ public class StaffController {
             System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(e.getMessage()));
         }
+    }
 
+    @GetMapping("/")
+    public ResponseEntity<StaffMemberResponse> getStaffMemberDetailsForTable() {
+        try{
+            List<StaffMemberTableDetails> staffMemberTableDetails= staffMemberService.getStaffMemberTableDetails();
+            return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<StaffMemberTableDetails>(staffMemberTableDetails));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{staffMemberId}")
+    public ResponseEntity<StaffMemberResponse> getStaffMemberById(@PathVariable("staffMemberId") int staffMemberId) {
+        try{
+            return ResponseEntity.status(HttpStatus.FOUND).body(new SuccessResponse<StaffMemberDto>(staffMemberService.getStaffMemberDetails(staffMemberId)));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(e.getMessage()));
+        }
     }
 }

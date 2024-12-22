@@ -26,7 +26,7 @@ public class PaymentController {
         System.out.println("Payment controller is called");
         try{
             List<PaymentDto> paymentList=paymentService.getAllPayments(memberId);
-            return ResponseEntity.status(HttpStatus.FOUND).body(new PaymentClassResponse<PaymentDto>(paymentList));
+            return ResponseEntity.status(HttpStatus.OK).body(new PaymentClassResponse<PaymentDto>(paymentList));
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new PaymentClassResponse<PaymentDto>("Internal Server Error"));
         }

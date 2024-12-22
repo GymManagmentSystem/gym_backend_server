@@ -142,7 +142,7 @@ public class MemberService {
 
             assert paymentList != null;
 
-            if(paymentList.getStatusCode()!=HttpStatus.FOUND){
+            if(paymentList.getStatusCode()!=HttpStatus.OK){
                 throw new RuntimeException("ISE");//Internal Server Error
             }
             MemberDetailsDto memberDetails=new MemberDetailsDto();
@@ -156,6 +156,7 @@ public class MemberService {
             throw new RuntimeException("RF");
         } catch (Exception e){
             System.out.println(e.getClass().getName());
+            System.out.println(e.getMessage());
             throw new RuntimeException("IS");
         }
 

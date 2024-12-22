@@ -16,9 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
-@CrossOrigin
 @RequestMapping(value = "api/v1/members")
 public class MemberController {
     @Autowired
@@ -27,8 +28,8 @@ public class MemberController {
     @GetMapping("/")
     public ResponseEntity<? extends MemberResponse> getMembers(){
         try{
-            BasicMemberDto memberDetails=memberService.getAllMembers();
-            return ResponseEntity.status(HttpStatus.FOUND).body(new SuccessResponse<BasicMemberDto>(memberDetails));
+            List<BasicMemberDto> memberDetails=memberService.getAllMembers();
+            return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<BasicMemberDto>(memberDetails));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("Internal Server Error"));
         }
@@ -62,13 +63,14 @@ public class MemberController {
         PaymentDto paymentDto=new PaymentDto();
         paymentDto.setPaymentDate(memberRegistrationDto.getPaymentDate());
         paymentDto.setPaymentTime(memberRegistrationDto.getPaymentTime());
-        paymentDto.setValidity(memberRegistrationDto.isPaymentValidity());
+        paymentDto.setValidity(memberRegistrationDto.isValidity());
         paymentDto.setPackageType(memberRegistrationDto.getPackageType());
+        paymentDto.setExpirayDate(memberRegistrationDto.getExpirayDate());
 
 
         try{
             MemberRegistrationDto savedMember= memberService.addNewMember(memberDt0,paymentDto,jwtToken);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessResponse<MemberRegistrationDto>(savedMember));
+            return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<MemberRegistrationDto>(savedMember));
         }catch(Exception e){
             if(e.getMessage().equals("NE")){
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse("Name Already Exists"));

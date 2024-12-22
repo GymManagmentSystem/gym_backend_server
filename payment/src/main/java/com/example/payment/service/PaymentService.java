@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -38,13 +39,28 @@ public class PaymentService {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<PaymentClassResponse<PaymentDto>> saveNewPayment(PaymentDto paymentDto){
         System.out.println(paymentDto);
         try{
+            //this will check payments has been done before by the member and fresh member first payment is handled here
+            if(!paymentRepo.existsById(paymentDto.getMemberId())){
+                paymentRepo.save(modelMapper.map(paymentDto,PaymentModel.class));
+                PaymentDto latestPayment=modelMapper.map(paymentRepo.getLatestPayment(),PaymentDto.class);
+                System.out.println("latest Payments is "+latestPayment);
+                return ResponseEntity.status(HttpStatus.OK).body(new PaymentClassResponse<PaymentDto>(latestPayment));
+            }
+
+            //this will invalidate the old payment done by the user
+            Integer isInvalidatedPastPayments=paymentRepo.invalidatePastPayment(paymentDto.getMemberId());
+            //if the updation is failed this will throw an error
+            if(isInvalidatedPastPayments==0){
+                throw new RuntimeException("PIF"); //payment invalidation failed
+            }
             paymentRepo.save(modelMapper.map(paymentDto,PaymentModel.class));
             PaymentDto latestPayment=modelMapper.map(paymentRepo.getLatestPayment(),PaymentDto.class);
             System.out.println("latest Payments is "+latestPayment);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new PaymentClassResponse<PaymentDto>(latestPayment));
+            return ResponseEntity.status(HttpStatus.OK).body(new PaymentClassResponse<PaymentDto>(latestPayment));
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new PaymentClassResponse<PaymentDto>(e.getMessage()));
         }

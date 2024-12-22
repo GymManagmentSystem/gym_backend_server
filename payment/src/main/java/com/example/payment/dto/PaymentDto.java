@@ -18,4 +18,5 @@ public class PaymentDto {
     private String paymentDate;
     private String paymentTime;
     private boolean validity;
+    private String expirayDate;
 }

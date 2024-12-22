@@ -11,7 +11,6 @@ import javax.validation.Valid;
 
 
 @RestController
-@CrossOrigin
 @RequestMapping(value = "api/v1/exercises")
 
 //hVE TO DO SERVER SIDE VALIDATIONS

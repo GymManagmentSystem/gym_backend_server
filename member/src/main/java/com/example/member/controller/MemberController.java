@@ -102,14 +102,17 @@ public class MemberController {
     public ResponseEntity<MemberResponse> getMemberDetailsById(@PathVariable("memberId") String memberId,@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
         String jwtToken = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwtToken = authorizationHeader.substring(7); // Remove "Bearer " prefix
+            jwtToken = authorizationHeader.substring(7);// Remove "Bearer " prefix
+            System.out.println(jwtToken);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Authorization header is missing or invalid"));
         }
         try{
             MemberDetailsDto memberDetails=memberService.getMemberDetails(Integer.parseInt(memberId),jwtToken);
-            return ResponseEntity.status(HttpStatus.FOUND).body(new SuccessResponse<MemberDetailsDto>(memberDetails));
+            System.out.println(memberDetails);
+            return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<MemberDetailsDto>(memberDetails));
         }catch(Exception e){
+            System.out.println(e.getMessage());
             if(e.getMessage().equals("MNF")){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("Member Not Found"));
             }if(e.getMessage().equals("RF")){

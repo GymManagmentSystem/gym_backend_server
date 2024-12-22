@@ -15,14 +15,15 @@ public class MemberRegistrationDto {
     private int age;
     private String address;
     private String contactNumber;
-    private String dateRegistered;
     private int weight;
     private int height;
+    private String dateRegistered;
     private String gender;
 
     private String packageType;
     private String paymentDate;
     private String paymentTime;
     private int amount;
-    private boolean paymentValidity;
+    private boolean validity;
+    private String expirayDate;
 }

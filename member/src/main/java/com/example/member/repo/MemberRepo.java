@@ -1,5 +1,6 @@
 package com.example.member.repo;
 
+import com.example.member.dto.BasicMemberDto;
 import com.example.member.dto.MemberDto;
 import com.example.member.model.MemberModel;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,8 +14,8 @@ import java.util.List;
 
 @Repository
 public interface MemberRepo extends JpaRepository<MemberModel, Integer>  {
-@Query(value = "SELECT member_id,first_name,date_Registered,gender FROM member_model",nativeQuery = true)
-List<MemberModel> getAllMembersTableDetails();
+@Query(value = "SELECT * FROM member_model",nativeQuery = true)
+List<MemberModel> getAllMembersDetails();
 
 @Query(value = "SELECT * FROM member_model ORDER BY member_id DESC LIMIT 1",nativeQuery = true)
 MemberModel getLatestMember();

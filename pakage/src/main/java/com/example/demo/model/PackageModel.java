@@ -18,6 +18,6 @@ public class PackageModel {
     private Integer packageId;
     private String packageName;
     private String packageDescription;
-    private String packageValidTime;
-    private int packageAmount;
+    private Integer packageValidTime;
+    private Integer packageAmount;
 }

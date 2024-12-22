@@ -27,7 +27,7 @@ public class PackageService {
         try{
             List<PackageModel> packageModelList = packageRepo.findAll();
             List<PackageDto> packageDtoList=modelMapper.map(packageModelList,new TypeToken<List<PackageDto>>(){}.getType());
-            return ResponseEntity.status(HttpStatus.FOUND).body(new SuccessResponse<PackageDto>(packageDtoList));
+            return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<PackageDto>(packageDtoList));
         }catch(Exception e){
             System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(e.getMessage())) ;

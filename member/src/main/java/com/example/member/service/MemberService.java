@@ -43,9 +43,10 @@ public class MemberService {
         this.modelMapper = modelMapper;
     }
 
-    public BasicMemberDto getAllMembers(){
+    public List<BasicMemberDto> getAllMembers(){
         try{
-            List<MemberModel> memberDetails=memberRepo.getAllMembersTableDetails();
+            List<MemberModel> memberDetails=memberRepo.getAllMembersDetails();
+            System.out.println(memberDetails);
             return modelMapper.map(memberDetails,new TypeToken<List<BasicMemberDto>>(){}.getType());
         }catch(Exception e){
             throw new RuntimeException("Internal Server Error");
@@ -75,7 +76,7 @@ public class MemberService {
 
             MemberModel savedMember=memberRepo.save(modelMapper.map(memberDto, MemberModel.class));
             MemberDto latestMember = modelMapper.map(savedMember,MemberDto.class);
-            System.out.println(latestMember);
+            System.out.println("latest member is :"+latestMember);
             paymentDto.setMemberId(latestMember.getMemberId());
 
             ResponseEntity<PaymentClassResponse<PaymentDto>> paymentInfo = paymentWebClient.post()
@@ -89,7 +90,7 @@ public class MemberService {
             assert paymentInfo != null;
 
 
-            if(paymentInfo.getStatusCode()!=HttpStatus.CREATED){
+            if(paymentInfo.getStatusCode()!=HttpStatus.OK){
                 throw new RuntimeException("PF");
             }
 
@@ -102,15 +103,19 @@ public class MemberService {
 
         }
         catch(WebClientResponseException e){
+            System.out.println(e.getMessage());
             throw new RuntimeException("PF");//payment Failed
         }
         catch(DataIntegrityViolationException e){
+            System.out.println(e.getMessage());
             throw new RuntimeException("DIVE");//dataIntegrityViolationException
         }
         catch(WebClientRequestException e){
+            System.out.println(e.getMessage());
             throw new RuntimeException("RF");//request failed
         }
         catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
 

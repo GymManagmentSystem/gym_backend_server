@@ -41,5 +41,7 @@ public class ExerciseDto {
 
     @NotNull(message = "Exercise Name Should Not Be Null")
     @Pattern(regexp = "^[A-Za-z0-9 ]+$", message = "Only alphanumeric characters and spaces are allowed for equipment.")
-    private String equipmentRequired;
+    private String exerciseEquipment;
+
+    private String exerciseImageUrl;
 }

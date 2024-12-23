@@ -25,5 +25,6 @@ public class ExerciseModel {
     @Column(nullable = false)
     private String exerciseLevel;
     @Column(nullable = false)
-    private String equipmentRequired;
+    private String exerciseEquipment;
+    private String exerciseImageUrl;
 }

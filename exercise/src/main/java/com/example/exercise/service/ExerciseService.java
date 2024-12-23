@@ -30,7 +30,7 @@ public class ExerciseService {
         try {
             List<ExerciseModel> exercisesList = exerciseRepo.findAll();
             List <ExerciseDto> responseExerciseList=modelMapper.map(exercisesList, new TypeToken<List<ExerciseDto>>() {}.getType());
-            return ResponseEntity.status(HttpStatus.FOUND).body(new SuccessResponse<ExerciseDto>(responseExerciseList));
+            return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<ExerciseDto>(responseExerciseList));
         } catch (Exception e) {
             System.out.println("Error is in controller: "+e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(e.getMessage()));
@@ -47,7 +47,7 @@ public class ExerciseService {
             }else{
                 exerciseRepo.save(modelMapper.map(exerciseDto,ExerciseModel.class));
                 ExerciseDto latesteExercise=modelMapper.map(exerciseRepo.getLastExercise(),ExerciseDto.class);
-                return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessResponse<ExerciseDto>(latesteExercise));
+                return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<ExerciseDto>(latesteExercise));
             }
         }catch(Exception e){
             System.out.println("Error is in controller: "+e.getMessage());

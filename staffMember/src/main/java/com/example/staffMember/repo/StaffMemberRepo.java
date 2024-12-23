@@ -11,7 +11,7 @@ public interface StaffMemberRepo extends JpaRepository<StaffMemberModel,Integer>
     @Query( value ="SELECT * FROM staff_member_model", nativeQuery = true)
     List<StaffMemberModel> findTableDetailsStaffMember();
 
-    @Query(value = "SELECT * FROM staff_member_model WHERE staff_member_id=?1",nativeQuery = true)
+    @Query(value = "SELECT * FROM staff_member_model WHERE member_id=?1",nativeQuery = true)
     StaffMemberModel findStaffMemberModelById(int staffMemberId);
 
     @Query(value = "SELECT COUNT(*)>0 FROM staff_member_model WHERE first_name=?1",nativeQuery = true)

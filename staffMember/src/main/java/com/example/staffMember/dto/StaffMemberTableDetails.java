@@ -9,8 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StaffMemberTableDetails {
-    private int staffMemberId;
+    private int memberId;
     private String firstName;
+    private String lastName;
     private String contactNumber;
     private String gender;
+    private String registeredDate;
 }

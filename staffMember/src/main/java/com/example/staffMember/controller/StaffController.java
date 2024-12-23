@@ -49,7 +49,7 @@ public class StaffController {
     @GetMapping("/{staffMemberId}")
     public ResponseEntity<StaffMemberResponse> getStaffMemberById(@PathVariable("staffMemberId") int staffMemberId) {
         try{
-            return ResponseEntity.status(HttpStatus.FOUND).body(new SuccessResponse<StaffMemberDto>(staffMemberService.getStaffMemberDetails(staffMemberId)));
+            return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<StaffMemberDto>(staffMemberService.getStaffMemberDetails(staffMemberId)));
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(e.getMessage()));
         }

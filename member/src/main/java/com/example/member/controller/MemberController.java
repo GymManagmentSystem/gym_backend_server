@@ -128,7 +128,7 @@ public class MemberController {
     public ResponseEntity<? extends MemberResponse> updateMember(@RequestBody MemberDto memberDto) {
         try {
             MemberDto updatedMember = memberService.updateMember(memberDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessResponse<MemberDto>(updatedMember));
+            return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<MemberDto>(updatedMember));
         } catch (Exception e) {
             System.out.println(e.getMessage());
             if (e.getMessage().equals("MNF")) {

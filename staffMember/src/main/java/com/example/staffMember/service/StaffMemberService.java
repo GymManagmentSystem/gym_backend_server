@@ -59,7 +59,7 @@ public class StaffMemberService {
                 StaffMemberCredentialDto staffMemberCredentialDto=new StaffMemberCredentialDto();
 
                 staffMemberCredentialDto.setPassword(staffMemberDto.getPassword());
-                staffMemberCredentialDto.setUserId(savedStaffMember.getStaffMemberId());
+                staffMemberCredentialDto.setUserId(savedStaffMember.getMemberId());
                 staffMemberCredentialDto.setUserName(savedStaffMember.getFirstName());
 
                 String credentialResponse=staffMemberCredentialsWebClient.post()

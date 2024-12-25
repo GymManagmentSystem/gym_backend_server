@@ -23,6 +23,12 @@ public class ExerciseController {
         return exerciseService.getAllExercises();
     }
 
+    @GetMapping("/names/")
+    public ResponseEntity<ExerciseResponse> getExercisesNameList(){
+        return exerciseService.getExercisesNameList();
+    }
+
+
     @PostMapping("/")
     public ResponseEntity<ExerciseResponse> addExercise(@Valid @RequestBody ExerciseDto exerciseDto) {
             return exerciseService.saveExercise(exerciseDto);

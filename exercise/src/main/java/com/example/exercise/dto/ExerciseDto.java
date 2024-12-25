@@ -44,4 +44,6 @@ public class ExerciseDto {
     private String exerciseEquipment;
 
     private String exerciseImageUrl;
+
+    private String exerciseUnit;
 }

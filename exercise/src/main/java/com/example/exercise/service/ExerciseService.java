@@ -5,6 +5,7 @@ import com.example.exercise.customResponse.ErrorResponse;
 import com.example.exercise.customResponse.ExerciseResponse;
 import com.example.exercise.customResponse.SuccessResponse;
 import com.example.exercise.dto.ExerciseDto;
+import com.example.exercise.dto.ExerciseNameListDto;
 import com.example.exercise.model.ExerciseModel;
 import com.example.exercise.repo.ExerciseRepo;
 import org.modelmapper.ModelMapper;
@@ -37,6 +38,17 @@ public class ExerciseService {
         }
     }
 
+    public ResponseEntity<ExerciseResponse> getExercisesNameList() {
+        try {
+            List<ExerciseModel> exercisesList = exerciseRepo.findAll();
+            List <ExerciseNameListDto> responseExerciseList=modelMapper.map(exercisesList, new TypeToken<List<ExerciseNameListDto>>() {}.getType());
+            return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<ExerciseNameListDto>(responseExerciseList));
+        } catch (Exception e) {
+            System.out.println("Error is in controller: "+e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
     @Transactional(rollbackFor = Exception.class)
     public ResponseEntity <ExerciseResponse> saveExercise(ExerciseDto exerciseDto){
         try{
@@ -55,4 +67,7 @@ public class ExerciseService {
         }
 
 }
+
+
+
 }

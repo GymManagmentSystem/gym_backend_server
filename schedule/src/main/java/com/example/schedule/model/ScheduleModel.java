@@ -15,8 +15,14 @@ public class ScheduleModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int scheduleId;
     private int memberId;
+    private String scheduleDay1;
+    private String scheduleDay2;
+    private String scheduleDays;
+    private String scheduleDescription;
+    private String scheduleExpirayDate;
+    private String scheduleRegisteredDate;
     private String scheduleType;
-    private String startDate;
+    private String scheduleValidTime;
     @Column(columnDefinition = "boolean default true")
     private boolean isActive=true;
 

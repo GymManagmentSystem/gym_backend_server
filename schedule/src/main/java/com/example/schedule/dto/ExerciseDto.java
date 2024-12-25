@@ -4,11 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExerciseDto {
     private String exerciseName;
-    private int reps;
+    private String reps;
     private int sets;
+    private int duration;
 }

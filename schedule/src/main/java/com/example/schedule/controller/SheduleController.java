@@ -20,9 +20,10 @@ public class SheduleController {
     SchdeuleService schdeuleService;
 
     @PostMapping(value = "/{memberId}")
-    public ResponseEntity<ScheduleResponse> addNewSchedule(@RequestBody List<ScheduleExerciseDto> scheduleExerciseDto) {
+    public ResponseEntity<ScheduleResponse> addNewSchedule(@RequestBody ScheduleExerciseDto scheduleExerciseDto) {
         try{
-            List<ScheduleExerciseDto> savedScheduleExerciseDto= schdeuleService.addNewSchedule(scheduleExerciseDto);
+            System.out.println("Schedule list"+ scheduleExerciseDto);
+            ScheduleExerciseDto savedScheduleExerciseDto= schdeuleService.addNewSchedule(scheduleExerciseDto);
             System.out.println("Schedule list"+ savedScheduleExerciseDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessResponse<ScheduleExerciseDto>(savedScheduleExerciseDto));
         }catch(Exception e){

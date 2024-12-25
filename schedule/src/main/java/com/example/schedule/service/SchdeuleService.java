@@ -28,10 +28,8 @@ public class SchdeuleService {
     ModelMapper modelMapper;
 
     @Transactional(rollbackFor = Exception.class)
-    public List<ScheduleExerciseDto> addNewSchedule(List<ScheduleExerciseDto> scheduleExerciseDtoList) {
-        List<ScheduleExerciseDto> savedScheduleList = new ArrayList<>();
+    public ScheduleExerciseDto addNewSchedule(ScheduleExerciseDto scheduleExerciseDto) {
         try{
-            for(ScheduleExerciseDto scheduleExerciseDto : scheduleExerciseDtoList){
                 ScheduleExerciseDto savedScheduleDto = new ScheduleExerciseDto();
                 scheduleExerciseDto.getSchedule().setActive(true);
                 Integer invalidatePreviousSchedules=scheduleRepo.setIsActiveFalse(scheduleExerciseDto.getSchedule().getMemberId(),scheduleExerciseDto.getSchedule().getScheduleType());
@@ -62,15 +60,16 @@ public class SchdeuleService {
                 List<ScheduleExerciseModel> savedSheduleExerciseModelList=scheduleExerciseRepo.saveAll(scheduleExerciseModelList);
                 List<ExerciseDto> savedScheduleExerciseDtoList=modelMapper.map(savedSheduleExerciseModelList,new TypeToken<List<ExerciseDto>>(){}.getType());
                 savedScheduleDto.setExerciseList(savedScheduleExerciseDtoList);
-                savedScheduleList.add(savedScheduleDto);
-            }
-            return savedScheduleList;
+
+            return savedScheduleDto;
 
 
         }catch (InvalidDataAccessResourceUsageException e){
+            System.out.println((e.getMessage()));
             throw new RuntimeException("IDARUE");//invalidate Data Access Resource
         }
         catch(Exception e){
+            System.out.println((e.getMessage()));
             throw new RuntimeException(e.getMessage());
         }
 

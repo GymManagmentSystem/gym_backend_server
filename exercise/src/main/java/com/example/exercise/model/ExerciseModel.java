@@ -27,4 +27,5 @@ public class ExerciseModel {
     @Column(nullable = false)
     private String exerciseEquipment;
     private String exerciseImageUrl;
+    private String exerciseUnit;
 }

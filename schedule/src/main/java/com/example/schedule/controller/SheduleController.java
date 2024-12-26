@@ -25,7 +25,7 @@ public class SheduleController {
             System.out.println("Schedule list"+ scheduleExerciseDto);
             ScheduleExerciseDto savedScheduleExerciseDto= schdeuleService.addNewSchedule(scheduleExerciseDto);
             System.out.println("Schedule list"+ savedScheduleExerciseDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessResponse<ScheduleExerciseDto>(savedScheduleExerciseDto));
+            return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<ScheduleExerciseDto>(savedScheduleExerciseDto));
         }catch(Exception e){
             if(e.getMessage().equals("SUF")){
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Schedule Update Failed"));
@@ -43,8 +43,9 @@ public class SheduleController {
     public ResponseEntity<ScheduleResponse> getCurrentSchedule(@PathVariable("memberId") String memberId) {
         try{
             //if isActive = 1 it shows current schedules
-            List<ScheduleExerciseDto> scheduleList=schdeuleService.getSchedulesById(1,true);
-            return ResponseEntity.status(HttpStatus.FOUND).body(new SuccessResponse<ScheduleExerciseDto>(scheduleList));
+            int id=Integer.parseInt(memberId);
+            List<ScheduleExerciseDto> scheduleList=schdeuleService.getSchedulesById(id,true);
+            return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<ScheduleExerciseDto>(scheduleList));
         }catch(Exception e){
             System.out.println("Exception is "+e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(e.getMessage()));
@@ -55,8 +56,9 @@ public class SheduleController {
     public ResponseEntity<ScheduleResponse> getPastHistorySchedule(@PathVariable("memberId") String memberId) {
         try{
             //if isActive = 0 it shows current pastSchedules
-            List<ScheduleExerciseDto> scheduleList=schdeuleService.getSchedulesById(1,false);
-            return ResponseEntity.status(HttpStatus.FOUND).body(new SuccessResponse<ScheduleExerciseDto>(scheduleList));
+            int id=Integer.parseInt(memberId);
+            List<ScheduleExerciseDto> scheduleList=schdeuleService.getSchedulesById(id,false);
+            return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<ScheduleExerciseDto>(scheduleList));
         }catch(Exception e){
             System.out.println("Exception is "+e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(e.getMessage()));

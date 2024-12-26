@@ -9,6 +9,6 @@ import java.util.List;
 
 
 public interface ScheduleExerciseRepo extends JpaRepository<ScheduleExerciseModel, Long>{
-    @Query(value="SELECT exercise_name,reps,sets,schedule_id,schedule_exercise_id FROM schedule_exercise_model WHERE schedule_id=?1",nativeQuery = true)
+    @Query(value="SELECT * FROM schedule_exercise_model WHERE schedule_id=?1",nativeQuery = true)
     List<ScheduleExerciseModel> getExercisesListByScheduleId(Integer scheduleId);
 }

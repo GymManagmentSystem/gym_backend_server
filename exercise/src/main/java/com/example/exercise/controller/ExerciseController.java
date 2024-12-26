@@ -34,4 +34,9 @@ public class ExerciseController {
             return exerciseService.saveExercise(exerciseDto);
     }
 
+    @GetMapping("/count")
+    public ResponseEntity<ExerciseResponse> getExercisesCount(){
+        return exerciseService.getExerciseCount();
+    }
+
 }

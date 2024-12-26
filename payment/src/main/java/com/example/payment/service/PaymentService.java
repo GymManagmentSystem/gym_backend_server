@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -42,9 +43,12 @@ public class PaymentService {
     @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<PaymentClassResponse<PaymentDto>> saveNewPayment(PaymentDto paymentDto){
         System.out.println(paymentDto);
+
+        System.out.println("Issue in 1 block");
         try{
             //this will check payments has been done before by the member and fresh member first payment is handled here
             if(!paymentRepo.existsById(paymentDto.getMemberId())){
+                System.out.println("Issue in 2 block");
                 paymentRepo.save(modelMapper.map(paymentDto,PaymentModel.class));
                 PaymentDto latestPayment=modelMapper.map(paymentRepo.getLatestPayment(),PaymentDto.class);
                 System.out.println("latest Payments is "+latestPayment);
@@ -54,16 +58,44 @@ public class PaymentService {
             //this will invalidate the old payment done by the user
             Integer isInvalidatedPastPayments=paymentRepo.invalidatePastPayment(paymentDto.getMemberId());
             //if the updation is failed this will throw an error
+            System.out.println("Issue in 3 block");
             if(isInvalidatedPastPayments==0){
                 throw new RuntimeException("PIF"); //payment invalidation failed
             }
+            System.out.println("Issue in 4 block");
             paymentRepo.save(modelMapper.map(paymentDto,PaymentModel.class));
+            System.out.println("Issue in 5 block");
             PaymentDto latestPayment=modelMapper.map(paymentRepo.getLatestPayment(),PaymentDto.class);
             System.out.println("latest Payments is "+latestPayment);
+            System.out.println("Issue in 6 block");
             return ResponseEntity.status(HttpStatus.OK).body(new PaymentClassResponse<PaymentDto>(latestPayment));
         }catch(Exception e){
+            System.out.println(System.out.printf(e.getMessage()));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new PaymentClassResponse<PaymentDto>(e.getMessage()));
         }
 
+    }
+
+    public ResponseEntity<PaymentResponse> getCurrentExpiredMembersCount(){
+        try{
+            Integer currentMemberCount=paymentRepo.getCurrentMemberCount();
+            Integer expiredMemberCount=paymentRepo.getExpiredMemberCount();
+            List<Integer> memberStatusCount= Arrays.asList(currentMemberCount,expiredMemberCount);
+            return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<Integer>(memberStatusCount));
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("Internal Server Error"));
+        }
+    }
+
+    public ResponseEntity<PaymentResponse> getLatestPayments(){
+        try{
+            List<PaymentModel> paymentModelList=paymentRepo.getLatestPayments();
+            List <PaymentDto> paymentDtoList=modelMapper.map(paymentModelList,new TypeToken<List<PaymentDto>>(){}.getType());
+            return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<PaymentDto>(paymentDtoList));
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("Internal Server Error"));
+        }
     }
 }

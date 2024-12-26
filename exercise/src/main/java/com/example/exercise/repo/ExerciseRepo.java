@@ -16,4 +16,7 @@ public interface ExerciseRepo extends JpaRepository<ExerciseModel,String> {
     @Query(value = "SELECT COUNT(*)>0 FROM exercise_model WHERE exercise_name=?1",nativeQuery = true)
     Integer existByName(String name);
 
+    @Query(value = "SELECT COUNT(*) FROM exercise_model",nativeQuery = true)
+    Integer exerciseCount();
+
 }

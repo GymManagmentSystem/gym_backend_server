@@ -54,4 +54,15 @@ public class StaffController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(e.getMessage()));
         }
     }
+
+    @GetMapping("/{position}/count")
+    public ResponseEntity<StaffMemberResponse> getInstrctorsCount(@PathVariable("position") String position) {
+        try{
+            Integer posotionCount=staffMemberService.getInstructorCount(position);
+            return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<Integer>(posotionCount));
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("Internal Server Error"));
+        }
+    }
 }

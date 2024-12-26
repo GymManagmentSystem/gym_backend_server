@@ -86,6 +86,7 @@ public class SchdeuleService {
                 scheduleExerciseDto.setExerciseList(modelMapper.map(scheduleExerciseModel,new TypeToken<List<ExerciseDto>>(){}.getType()));
                 scheduleExerciseList.add(scheduleExerciseDto);
             }
+            System.out.println("Schedule exercise list:"+memberId+" : "+scheduleExerciseList);
             return scheduleExerciseList;
 
         }catch(Exception e){

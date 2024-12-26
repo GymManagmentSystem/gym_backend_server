@@ -2,6 +2,7 @@ package com.example.payment.repo;
 
 import com.example.payment.model.PaymentModel;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -10,12 +11,20 @@ public interface PaymentRepo extends JpaRepository <PaymentModel,Integer> {
     @Query(value = "SELECT payment_id,member_id,package_type,payment_date,payment_time,validity,expiray_date FROM payment_model WHERE member_id=?1",nativeQuery = true)
     List<PaymentModel> getAllPaymentDetailsById(Integer memberId);
 
+    @Modifying
     @Query(value = "UPDATE payment_model SET validity=false WHERE validity=true AND member_id=?1",nativeQuery = true)
     Integer invalidatePastPayment(Integer memberId);
 
     @Query(value = "SELECT * FROM payment_model ORDER BY payment_id DESC LIMIT 1",nativeQuery = true)
     PaymentModel getLatestPayment();
 
+    @Query(value = "SELECT COUNT(member_id) FROM payment_model WHERE expiray_date>=current_date() AND validity=true",nativeQuery = true)
+    Integer getCurrentMemberCount();
 
+    @Query(value = "SELECT COUNT(member_id) FROM payment_model WHERE expiray_date<current_date() AND validity=true",nativeQuery = true)
+    Integer getExpiredMemberCount();
+
+    @Query(value = "SELECT payment_id,member_id,package_type,payment_date,payment_time,validity,expiray_date FROM payment_model WHERE validity=true",nativeQuery = true)
+    List<PaymentModel> getLatestPayments();
 
 }

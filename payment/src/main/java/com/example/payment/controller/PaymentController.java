@@ -38,4 +38,14 @@ public class PaymentController {
     public ResponseEntity<PaymentClassResponse<PaymentDto>> saveNewPayment(@RequestBody PaymentDto paymentDto){
         return paymentService.saveNewPayment(paymentDto);
     }
+
+    @GetMapping(value="/paymentStatusCount")
+    public ResponseEntity<PaymentResponse> getPaymentStatusCount(){
+        return paymentService.getCurrentExpiredMembersCount();
+    }
+
+    @GetMapping(value = "/latestPayments")
+    public ResponseEntity<PaymentResponse> getLatestPayments(){
+        return paymentService.getLatestPayments();
+    }
 }

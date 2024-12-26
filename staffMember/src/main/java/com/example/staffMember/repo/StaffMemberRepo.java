@@ -22,4 +22,7 @@ public interface StaffMemberRepo extends JpaRepository<StaffMemberModel,Integer>
 
     @Query(value = "SELECT COUNT(*)>0 FROM staff_member_model WHERE contact_number=?1",nativeQuery = true)
     Integer memberExistsByContactNumber(String contactNumber);
+
+    @Query(value = "SELECT COUNT(*)>0 FROM staff_member_model WHERE position=?1",nativeQuery = true)
+    Integer getCountByPosition(String position);
 }

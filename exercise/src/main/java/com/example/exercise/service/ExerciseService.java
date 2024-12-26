@@ -68,6 +68,13 @@ public class ExerciseService {
 
 }
 
-
-
+    public ResponseEntity<ExerciseResponse> getExerciseCount(){
+        try {
+            Integer exerciseCount=exerciseRepo.exerciseCount();
+            return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<Integer>(exerciseCount));
+        } catch (Exception e) {
+            System.out.println("Error is in controller: "+e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(e.getMessage()));
+        }
+    }
 }

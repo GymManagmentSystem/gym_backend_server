@@ -104,6 +104,15 @@ public class StaffMemberService {
         }
     }
 
+    public Integer getInstructorCount(String position){
+        try{
+            return staffMemberRepo.getCountByPosition(position);
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            throw new RuntimeException("Internal Server Error");
+        }
+    }
+
     public Integer isNamePresent(String userName){
         return staffMemberRepo.memberExistsByName(userName);
     }

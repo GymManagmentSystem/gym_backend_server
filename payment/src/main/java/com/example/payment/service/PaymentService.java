@@ -5,6 +5,7 @@ import com.example.payment.customResponse.PaymentClassResponse;
 import com.example.payment.customResponse.PaymentResponse;
 import com.example.payment.customResponse.SuccessResponse;
 import com.example.payment.dto.PaymentDto;
+import com.example.payment.dto.PaymentMonthDto;
 import com.example.payment.model.PaymentModel;
 import com.example.payment.repo.PaymentRepo;
 import org.modelmapper.ModelMapper;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PaymentService {
@@ -93,6 +95,22 @@ public class PaymentService {
             List<PaymentModel> paymentModelList=paymentRepo.getLatestPayments();
             List <PaymentDto> paymentDtoList=modelMapper.map(paymentModelList,new TypeToken<List<PaymentDto>>(){}.getType());
             return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<PaymentDto>(paymentDtoList));
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("Internal Server Error"));
+        }
+    }
+
+    public ResponseEntity<PaymentResponse> getMonthlyPackageCount(String packageType){
+        try{
+            List<Object[]> payementMonthList=paymentRepo.getMonthlyPackageCount(packageType);
+            List<PaymentMonthDto> paymentMonthDtoList= payementMonthList.stream().map(record->{
+                int memberCount=((Number)record[0]).intValue();
+                int month=((Number)record[1]).intValue();
+                int year=((Number)record[2]).intValue();
+                return new PaymentMonthDto(memberCount,month,year);
+            }).toList();
+            return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<PaymentMonthDto>(paymentMonthDtoList));
         }catch(Exception e){
             System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("Internal Server Error"));

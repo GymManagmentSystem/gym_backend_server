@@ -1,5 +1,6 @@
 package com.example.payment.repo;
 
+import com.example.payment.dto.PaymentMonthDto;
 import com.example.payment.model.PaymentModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -26,5 +27,8 @@ public interface PaymentRepo extends JpaRepository <PaymentModel,Integer> {
 
     @Query(value = "SELECT payment_id,member_id,package_type,payment_date,payment_time,validity,expiray_date FROM payment_model WHERE validity=true",nativeQuery = true)
     List<PaymentModel> getLatestPayments();
+
+    @Query(value = "SELECT COUNT(member_id) AS memberCount,MONTH(payment_date) AS month,YEAR(payment_date) AS year FROM payment_model WHERE package_type=?1 GROUP BY month,year ORDER BY year DESC,month DESC LIMIT 7",nativeQuery = true)
+    List<Object []> getMonthlyPackageCount(String packageType);
 
 }

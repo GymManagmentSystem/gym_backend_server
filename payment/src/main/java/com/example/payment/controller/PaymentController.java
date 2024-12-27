@@ -48,4 +48,10 @@ public class PaymentController {
     public ResponseEntity<PaymentResponse> getLatestPayments(){
         return paymentService.getLatestPayments();
     }
+
+    @GetMapping(value="/{packageType}/count")
+    public ResponseEntity<PaymentResponse> getMonthlyPackageCount(@PathVariable String packageType){
+        return paymentService.getMonthlyPackageCount(packageType);
+    }
+
 }

@@ -4,6 +4,7 @@ import com.example.payment.customResponse.ErrorResponse;
 import com.example.payment.customResponse.PaymentClassResponse;
 import com.example.payment.customResponse.PaymentResponse;
 import com.example.payment.customResponse.SuccessResponse;
+import com.example.payment.dto.MonthlyIncomeDto;
 import com.example.payment.dto.PaymentDto;
 import com.example.payment.dto.PaymentMonthDto;
 import com.example.payment.model.PaymentModel;
@@ -16,10 +17,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Service
 public class PaymentService {
@@ -44,8 +45,7 @@ public class PaymentService {
 
     @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<PaymentClassResponse<PaymentDto>> saveNewPayment(PaymentDto paymentDto){
-        System.out.println(paymentDto);
-
+        System.out.println(paymentDto.getPaymentAmount());
         System.out.println("Issue in 1 block");
         try{
             //this will check payments has been done before by the member and fresh member first payment is handled here
@@ -82,6 +82,7 @@ public class PaymentService {
         try{
             Integer currentMemberCount=paymentRepo.getCurrentMemberCount();
             Integer expiredMemberCount=paymentRepo.getExpiredMemberCount();
+            System.out.println("currentMemberCount is "+currentMemberCount);
             List<Integer> memberStatusCount= Arrays.asList(currentMemberCount,expiredMemberCount);
             return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<Integer>(memberStatusCount));
         }catch(Exception e){
@@ -103,7 +104,7 @@ public class PaymentService {
 
     public ResponseEntity<PaymentResponse> getMonthlyPackageCount(String packageType){
         try{
-            List<Object[]> payementMonthList=paymentRepo.getMonthlyPackageCount(packageType);
+            List<Object[]> payementMonthList=paymentRepo.getMonthlySpecificPackageCount(packageType);
             List<PaymentMonthDto> paymentMonthDtoList= payementMonthList.stream().map(record->{
                 int memberCount=((Number)record[0]).intValue();
                 int month=((Number)record[1]).intValue();
@@ -116,4 +117,24 @@ public class PaymentService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("Internal Server Error"));
         }
     }
+
+    public ResponseEntity<PaymentResponse> getMontlyIncome(){
+        try{
+            List<Object []>  monthlyIncomeList=paymentRepo.getMonthlyIncome();
+            List<MonthlyIncomeDto> monthlyIncomeDtoList=new ArrayList<>();
+            for(Object[] row:monthlyIncomeList){
+                MonthlyIncomeDto monthlyIncomeDto=new MonthlyIncomeDto();
+                monthlyIncomeDto.setAmount(((Number)row[0]).intValue());
+                monthlyIncomeDto.setYear(((Number)row[1]).intValue());
+                monthlyIncomeDto.setMonth(((Number)row[2]).intValue());
+                monthlyIncomeDtoList.add(monthlyIncomeDto);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<MonthlyIncomeDto>(monthlyIncomeDtoList));
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("Internal Server Error"));
+        }
+
+    }
+
 }

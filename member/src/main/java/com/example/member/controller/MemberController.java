@@ -60,12 +60,14 @@ public class MemberController {
         memberDt0.setContactNumber(memberRegistrationDto.getContactNumber());
         memberDt0.setDateRegistered(memberRegistrationDto.getDateRegistered());
 
+
         PaymentDto paymentDto=new PaymentDto();
         paymentDto.setPaymentDate(memberRegistrationDto.getPaymentDate());
         paymentDto.setPaymentTime(memberRegistrationDto.getPaymentTime());
         paymentDto.setValidity(memberRegistrationDto.isValidity());
         paymentDto.setPackageType(memberRegistrationDto.getPackageType());
         paymentDto.setExpirayDate(memberRegistrationDto.getExpirayDate());
+        paymentDto.setPaymentAmount(memberRegistrationDto.getPaymentAmount());
 
 
         try{

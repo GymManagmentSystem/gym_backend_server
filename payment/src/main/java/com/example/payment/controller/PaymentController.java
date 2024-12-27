@@ -36,6 +36,7 @@ public class PaymentController {
 
     @PostMapping(value = "/{memberId}")
     public ResponseEntity<PaymentClassResponse<PaymentDto>> saveNewPayment(@RequestBody PaymentDto paymentDto){
+        System.out.println(paymentDto.getPaymentAmount());
         return paymentService.saveNewPayment(paymentDto);
     }
 
@@ -52,6 +53,11 @@ public class PaymentController {
     @GetMapping(value="/{packageType}/count")
     public ResponseEntity<PaymentResponse> getMonthlyPackageCount(@PathVariable String packageType){
         return paymentService.getMonthlyPackageCount(packageType);
+    }
+
+    @GetMapping(value="/monthlyIncome")
+    public ResponseEntity<PaymentResponse> getMonthlyIncome(){
+        return paymentService.getMontlyIncome();
     }
 
 }

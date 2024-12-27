@@ -107,7 +107,7 @@ public class PaymentService {
             List<Object[]> payementMonthList=paymentRepo.getMonthlySpecificPackageCount(packageType);
             List<PaymentMonthDto> paymentMonthDtoList= payementMonthList.stream().map(record->{
                 int memberCount=((Number)record[0]).intValue();
-                int month=((Number)record[1]).intValue();
+                String month=((String)record[1]);
                 int year=((Number)record[2]).intValue();
                 return new PaymentMonthDto(memberCount,month,year);
             }).toList();
@@ -126,7 +126,7 @@ public class PaymentService {
                 MonthlyIncomeDto monthlyIncomeDto=new MonthlyIncomeDto();
                 monthlyIncomeDto.setAmount(((Number)row[0]).intValue());
                 monthlyIncomeDto.setYear(((Number)row[1]).intValue());
-                monthlyIncomeDto.setMonth(((Number)row[2]).intValue());
+                monthlyIncomeDto.setMonth(((String)row[2]));
                 monthlyIncomeDtoList.add(monthlyIncomeDto);
             }
             return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<MonthlyIncomeDto>(monthlyIncomeDtoList));

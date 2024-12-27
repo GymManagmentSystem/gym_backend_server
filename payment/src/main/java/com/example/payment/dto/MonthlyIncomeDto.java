@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 public class MonthlyIncomeDto {
     private int amount;
     private int year;
-    private int month;
+    private String month;
 }

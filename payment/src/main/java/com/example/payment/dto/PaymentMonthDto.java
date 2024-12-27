@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PaymentMonthDto {
     private int memberCount;
-    private int month;
+    private String month;
     private int year;
 }

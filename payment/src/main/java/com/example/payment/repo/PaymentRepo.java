@@ -29,6 +29,9 @@ public interface PaymentRepo extends JpaRepository <PaymentModel,Integer> {
     List<PaymentModel> getLatestPayments();
 
     @Query(value = "SELECT COUNT(member_id) AS memberCount,MONTH(payment_date) AS month,YEAR(payment_date) AS year FROM payment_model WHERE package_type=?1 GROUP BY month,year ORDER BY year DESC,month DESC LIMIT 7",nativeQuery = true)
-    List<Object []> getMonthlyPackageCount(String packageType);
+    List<Object []> getMonthlySpecificPackageCount(String packageType);
+
+    @Query(value="SELECT SUM(payment_amount) as amount,YEAR(payment_date)as year,MONTH(payment_date) as month from payment_model  GROUP BY year,month",nativeQuery = true)
+    List<Object []> getMonthlyIncome();
 
 }

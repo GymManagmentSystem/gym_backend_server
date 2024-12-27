@@ -22,4 +22,5 @@ public class PaymentModel {
     private String paymentTime;
     private Boolean validity;
     private String expirayDate;
+    private int paymentAmount;
 }

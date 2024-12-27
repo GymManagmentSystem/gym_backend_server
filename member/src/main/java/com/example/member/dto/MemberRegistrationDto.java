@@ -23,7 +23,7 @@ public class MemberRegistrationDto {
     private String packageType;
     private String paymentDate;
     private String paymentTime;
-    private int amount;
+    private int paymentAmount;
     private boolean validity;
     private String expirayDate;
 }

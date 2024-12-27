@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentDto {
-
     private int paymentId;
     private int memberId;
     private String packageType;
@@ -19,4 +18,5 @@ public class PaymentDto {
     private String paymentTime;
     private boolean validity;
     private String expirayDate;
+    private int paymentAmount;
 }

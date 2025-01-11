@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface PaymentRepo extends JpaRepository <PaymentModel,Integer> {
-    @Query(value = "SELECT payment_id,member_id,package_type,payment_date,payment_time,validity,expiray_date FROM payment_model WHERE member_id=?1",nativeQuery = true)
+    @Query(value = "SELECT payment_id,member_id,package_type,payment_date,payment_time,validity,expiray_date,payment_amount FROM payment_model WHERE member_id=?1",nativeQuery = true)
     List<PaymentModel> getAllPaymentDetailsById(Integer memberId);
 
     @Modifying
@@ -25,8 +25,8 @@ public interface PaymentRepo extends JpaRepository <PaymentModel,Integer> {
     @Query(value = "SELECT COUNT(member_id) FROM payment_model WHERE expiray_date<current_date() AND validity=true",nativeQuery = true)
     Integer getExpiredMemberCount();
 
-    @Query(value = "SELECT payment_id,member_id,package_type,payment_date,payment_time,validity,expiray_date FROM payment_model WHERE validity=true",nativeQuery = true)
-    List<PaymentModel> getLatestPayments();
+    @Query(value = "SELECT payment_id,member_id,package_type,payment_date,payment_time,validity,expiray_date,payment_amount FROM payment_model WHERE validity=true",nativeQuery = true)
+    List<PaymentModel> getMemberPaymentStatus();
 
     @Query(value = "SELECT COUNT(member_id) AS memberCount,MONTHNAME(payment_date) AS month,YEAR(payment_date) AS year FROM payment_model WHERE package_type=?1 GROUP BY month,year ORDER BY year DESC,MONTH(month) DESC LIMIT 7",nativeQuery = true)
     List<Object []> getMonthlySpecificPackageCount(String packageType);

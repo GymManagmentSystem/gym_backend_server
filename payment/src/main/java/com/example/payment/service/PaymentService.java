@@ -93,7 +93,7 @@ public class PaymentService {
 
     public ResponseEntity<PaymentResponse> getLatestPayments(){
         try{
-            List<PaymentModel> paymentModelList=paymentRepo.getLatestPayments();
+            List<PaymentModel> paymentModelList=paymentRepo.getMemberPaymentStatus();
             List <PaymentDto> paymentDtoList=modelMapper.map(paymentModelList,new TypeToken<List<PaymentDto>>(){}.getType());
             return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<PaymentDto>(paymentDtoList));
         }catch(Exception e){

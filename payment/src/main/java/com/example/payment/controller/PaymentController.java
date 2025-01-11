@@ -45,7 +45,7 @@ public class PaymentController {
         return paymentService.getCurrentExpiredMembersCount();
     }
 
-    @GetMapping(value = "/latestPayments")
+    @GetMapping(value = "/latest")
     public ResponseEntity<PaymentResponse> getLatestPayments(){
         return paymentService.getLatestPayments();
     }

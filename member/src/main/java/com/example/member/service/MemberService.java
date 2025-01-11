@@ -24,6 +24,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 
 @Service
@@ -168,21 +169,34 @@ public class MemberService {
         String name = memberDto.getFirstName();
         String email = memberDto.getEmail();
         String mobileNumber = memberDto.getContactNumber();
+        MemberModel memberModel=modelMapper.map(memberDto,MemberModel.class);
+        Integer isMemberUpdated=0;
         try {
-            if (memberRepo.memberExistsByName(name) == 1) {
-                throw new RuntimeException("NE"); //name already exists
+            Optional<MemberModel> pastMemberDetails=memberRepo.findById(memberDto.getMemberId());
+            boolean isPresentMember=pastMemberDetails.isPresent();
+            if(!isPresentMember){
+               throw new RuntimeException("NUMF");
+            }
+            if(pastMemberDetails.get().getFirstName().equals(name) && pastMemberDetails.get().getEmail().equals(email) && pastMemberDetails.get().getContactNumber().equals(mobileNumber)){
+                isMemberUpdated=memberRepo.updateMemberDetails(memberModel);
+                System.out.println(memberModel.getMemberId());
+            }
+            else{
+                if (memberRepo.memberExistsByName(name) == 1) {
+                    throw new RuntimeException("NE"); //name already exists
+                }
+
+                if (memberRepo.memberExistsByEmail(email) == 1) {
+                    throw new RuntimeException("EE");//email exists
+                }
+
+                if (memberRepo.memberExistsByContactNumber(mobileNumber) == 1) {
+                    throw new RuntimeException("NE");//number exists
+                }
+                isMemberUpdated=memberRepo.updateMemberDetails(memberModel);
+                System.out.println(memberModel.getMemberId());
             }
 
-            if (memberRepo.memberExistsByEmail(email) == 1) {
-                throw new RuntimeException("EE");//email exists
-            }
-
-            if (memberRepo.memberExistsByContactNumber(mobileNumber) == 1) {
-                throw new RuntimeException("NE");//number exists
-            }
-            MemberModel memberModel=modelMapper.map(memberDto,MemberModel.class);
-            System.out.println(memberModel.getMemberId());
-            Integer isMemberUpdated=memberRepo.updateMemberDetails(memberModel);
             if(isMemberUpdated==0){
                 throw new RuntimeException("MUF");//Member update failed
             }

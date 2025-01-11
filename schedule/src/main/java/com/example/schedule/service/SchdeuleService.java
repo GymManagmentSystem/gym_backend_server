@@ -55,6 +55,7 @@ public class SchdeuleService {
                     scheduleExerciseModel.setExerciseName(exerciseDto.getExerciseName());
                     scheduleExerciseModel.setReps(exerciseDto.getReps());
                     scheduleExerciseModel.setSets(exerciseDto.getSets());
+                    scheduleExerciseModel.setDuration(exerciseDto.getDuration());
                     scheduleExerciseModelList.add(scheduleExerciseModel);
                 }
                 List<ScheduleExerciseModel> savedSheduleExerciseModelList=scheduleExerciseRepo.saveAll(scheduleExerciseModelList);

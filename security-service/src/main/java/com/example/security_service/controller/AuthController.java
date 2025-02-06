@@ -4,10 +4,12 @@ package com.example.security_service.controller;
 import com.example.security_service.customResponse.ErrorResponse;
 import com.example.security_service.customResponse.ResponseClass;
 import com.example.security_service.customResponse.SuccessResponse;
+import com.example.security_service.dto.CustomMemberDetails;
 import com.example.security_service.dto.MemberCredentialDto;
 import com.example.security_service.dto.UserCredentialDto;
 import com.example.security_service.service.AuthService;
 import com.example.security_service.service.PasswordGenerator;
+import com.example.security_service.utility.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,7 @@ public class AuthController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
 
 
     @PostMapping("/member/password/new")
@@ -64,15 +67,23 @@ public class AuthController {
     @PostMapping("/token")
    public ResponseEntity<ResponseClass> getToken(@RequestBody UserCredentialDto userCredentialDto) {
         System.out.println("Before Authentication");
+        UserContext.setUserType(userCredentialDto.getUserType());// set the user type to member or staff in thread level
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userCredentialDto.getUserName(), userCredentialDto.getPassword()));
-            System.out.println("After authentication " + authentication);
             if (!authentication.isAuthenticated()) {
                 throw new UsernameNotFoundException("Invalid username or password");
             }
             System.out.println("Authentication Successfull");
             String token=authService.generateToken(userCredentialDto.getUserName());
+            if(userCredentialDto.getUserType().equals("MEMBER")){
+                CustomMemberDetails userDetails = (CustomMemberDetails) authentication.getPrincipal();
+                // Extract individual values
+                String isFirstUser = userDetails.isFirstUser()?"New Member":"Existing Member";
+                return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse("MemberType: "+isFirstUser,token));
+            }
             return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse("login Successful",token));
+
+
         }catch(BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Invalid username or password"));
         }

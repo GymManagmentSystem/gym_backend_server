@@ -23,6 +23,7 @@
       <module>discoveryServer</module>
       <module>apiGateway</module>
     <module>security-service</module>
+    <module>emailSender</module>
   </modules>
 
   <properties>

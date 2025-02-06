@@ -4,8 +4,10 @@ package com.example.security_service.controller;
 import com.example.security_service.customResponse.ErrorResponse;
 import com.example.security_service.customResponse.ResponseClass;
 import com.example.security_service.customResponse.SuccessResponse;
+import com.example.security_service.dto.MemberCredentialDto;
 import com.example.security_service.dto.UserCredentialDto;
 import com.example.security_service.service.AuthService;
+import com.example.security_service.service.PasswordGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +28,27 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
+
+    @PostMapping("/member/password/new")
+    public ResponseEntity<String> generateNewMemberCredentials(@RequestParam int userId, @RequestParam String userName) {
+        try{
+            PasswordGenerator passwordGenerator=new PasswordGenerator();
+            String generatedPassword=passwordGenerator.generatePassword();
+            MemberCredentialDto newMemberCredentialDto=new MemberCredentialDto();
+            newMemberCredentialDto.setPassword(generatedPassword);
+            newMemberCredentialDto.setMemberId(userId);
+            newMemberCredentialDto.setUserName(userName);
+            newMemberCredentialDto.setFirstUser(true);
+            authService.addNewMemberCredentials(newMemberCredentialDto);
+            return ResponseEntity.status(HttpStatus.OK).body(generatedPassword);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 
     @PostMapping("/register")
     public String addNewUserCredentials(@RequestBody UserCredentialDto userCredentialDto) {

@@ -11,7 +11,9 @@ public class RouteValidator {
     public static final List<String> openApiEndPoints=List.of(
             "/api/v1/auth/register",
             "/api/v1/auth/token",
+            "/api/v1/auth/member/password/new",
             "/eureka"
+
 
     );
 

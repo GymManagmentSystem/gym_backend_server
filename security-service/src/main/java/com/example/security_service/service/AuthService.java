@@ -1,8 +1,11 @@
 package com.example.security_service.service;
 
 
+import com.example.security_service.dto.MemberCredentialDto;
 import com.example.security_service.dto.UserCredentialDto;
+import com.example.security_service.entity.MemberCredentialsModel;
 import com.example.security_service.entity.UserCredentialsModel;
+import com.example.security_service.repo.MemberCredentialsRepo;
 import com.example.security_service.repo.UserCredentials;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,9 @@ public class AuthService {
    @Autowired
    private PasswordEncoder passwordEncoder;
 
+   @Autowired
+   private MemberCredentialsRepo memberCredentialsRepo;
+
 
     public UserCredentialDto addNewUserCredentials(UserCredentialDto userCredentialDto) {
         userCredentialDto.setPassword(passwordEncoder.encode(userCredentialDto.getPassword()));
@@ -34,6 +40,18 @@ public class AuthService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    public MemberCredentialsModel addNewMemberCredentials(MemberCredentialDto memberCredentialDto) {
+        memberCredentialDto.setPassword(passwordEncoder.encode(memberCredentialDto.getPassword()));
+        MemberCredentialsModel memberCredentialsModel = modelMapper.map(memberCredentialDto, MemberCredentialsModel.class);
+        try{
+            MemberCredentialsModel savedMemberCredentialModel=memberCredentialsRepo.save(memberCredentialsModel);
+            return modelMapper.map(savedMemberCredentialModel, MemberCredentialsModel.class);
+        }catch(Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+
     }
 
     public String generateToken(String userName){

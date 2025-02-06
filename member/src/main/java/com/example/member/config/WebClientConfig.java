@@ -18,4 +18,14 @@ public class WebClientConfig {
     public WebClient PaymentWebClient(){
         return webClientBuilder().baseUrl("http://apigateway/api/v1/payments").build();
     }
+
+    @Bean
+    public WebClient MemberAuthWebClient(){
+        return webClientBuilder().baseUrl("http://apigateway/api/v1/auth/member").build();
+    }
+
+    @Bean
+    public WebClient EmailWebClient(){
+        return webClientBuilder().baseUrl("http://apigateway/api/v1/email").build();
+    }
 }

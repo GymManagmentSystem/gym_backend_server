@@ -1,6 +1,7 @@
 package com.example.member.service;
 
 
+import com.example.emailSender.dto.SimpleMail;
 import com.example.member.dto.BasicMemberDto;
 import com.example.member.dto.MemberDetailsDto;
 import com.example.member.dto.MemberDto;
@@ -32,14 +33,20 @@ public class MemberService {
 
     private final WebClient paymentWebClient;
 
+    private final WebClient memberAuthWebClient;
+
+    private final WebClient emailWebClient;
+
     @Autowired
     private MemberRepo memberRepo;
 
     @Autowired
     private ModelMapper modelMapper;
 
-    public MemberService(WebClient PaymentWebClient,MemberRepo memberRepo,ModelMapper modelMapper) {
+    public MemberService(WebClient PaymentWebClient,WebClient MemberAuthWebClient,WebClient EmailWebClient,MemberRepo memberRepo,ModelMapper modelMapper) {
         this.paymentWebClient = PaymentWebClient;
+        this.memberAuthWebClient = MemberAuthWebClient;
+        this.emailWebClient = EmailWebClient;
         this.memberRepo = memberRepo;
         this.modelMapper = modelMapper;
     }
@@ -100,6 +107,42 @@ public class MemberService {
             modelMapper.map(paymentDetails,latestMemberDetails);
             modelMapper.map(latestMember,latestMemberDetails);
             System.out.println("saved member details "+latestMemberDetails);
+
+
+            ResponseEntity<String> memberAuthInfo=memberAuthWebClient.post()
+                    .uri(uriBuilder -> uriBuilder.path("/password/new")
+                            .queryParam("userId",latestMemberDetails.getMemberId())
+                            .queryParam("userName",latestMemberDetails.getFirstName())
+                            .build())
+                    .retrieve()
+                    .toEntity(String.class)
+                    .block();
+
+            assert memberAuthInfo != null;
+
+            if(memberAuthInfo.getStatusCode()!=HttpStatus.OK){
+                throw new RuntimeException("AF");
+            }
+
+
+            SimpleMail simpleMail=new SimpleMail();
+            simpleMail.setReciver(latestMemberDetails.getEmail());
+            simpleMail.setSubject("Welcome! You have created your MotionZone Account");
+            simpleMail.setBody("Your password is: "+memberAuthInfo.getBody()+"You must reset password at first login");
+            ResponseEntity<String> emailInfo=emailWebClient.post()
+                    .uri(uriBuilder -> uriBuilder.path("/simple").build())
+                    .headers(headers -> headers.setBearerAuth(jwtToken))
+                    .bodyValue(simpleMail)
+                    .retrieve()
+                    .toEntity(String.class)
+                    .block();
+
+            assert emailInfo != null;
+
+            if(emailInfo.getStatusCode()!=HttpStatus.OK){
+                throw new RuntimeException("EF");
+            }
+
             return latestMemberDetails;
 
         }

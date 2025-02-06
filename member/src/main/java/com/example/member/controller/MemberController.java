@@ -46,8 +46,6 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Authorization header is missing or invalid"));
         }
 
-
-
         MemberDto memberDt0=new MemberDto();
         memberDt0.setFirstName(memberRegistrationDto.getFirstName());
         memberDt0.setLastName(memberRegistrationDto.getLastName());
@@ -91,7 +89,14 @@ public class MemberController {
             }
             if(e.getMessage().equals("RF")){
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Request Failed Try Again"));
-            }else{
+            }
+            if(e.getMessage().equals("AF")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Authentication Failed"));
+            }
+            if(e.getMessage().equals("EF")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Email sending is failed"));
+            }
+            else{
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("Something went wrong"));
             }
 

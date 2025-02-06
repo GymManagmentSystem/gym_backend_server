@@ -54,6 +54,13 @@ public class AuthService {
 
     }
 
+    public void resetPassword(MemberCredentialDto memberCredentialDto) {
+        memberCredentialDto.setPassword(passwordEncoder.encode(memberCredentialDto.getPassword()));
+        System.out.println(memberCredentialDto.getPassword());
+        System.out.println(memberCredentialDto.getUserName());
+        memberCredentialsRepo.resetPassword(memberCredentialDto.getPassword(),memberCredentialDto.getUserName());
+    }
+
     public String generateToken(String userName){
         System.out.println(userName);
         return jwtService.generateToken(userName);

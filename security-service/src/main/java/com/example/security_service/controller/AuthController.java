@@ -53,6 +53,18 @@ public class AuthController {
         }
     }
 
+    @PostMapping("member/password/reset")
+    public ResponseEntity<String> resetPassword(@RequestBody MemberCredentialDto memberCredentialDto) {
+        try{
+            authService.resetPassword(memberCredentialDto);
+            return ResponseEntity.status(HttpStatus.OK).body("Password reset successful");
+        }catch(Exception e){
+            System.out.println("Password reset failed");
+            System.out.println(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Password reset failed");
+        }
+    }
+
     @PostMapping("/register")
     public String addNewUserCredentials(@RequestBody UserCredentialDto userCredentialDto) {
         try{

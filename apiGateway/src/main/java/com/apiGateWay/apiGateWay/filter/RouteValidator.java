@@ -15,6 +15,7 @@ public class RouteValidator {
             "/api/v1/auth/member/new-password",
             "api/v1/auth/member/reset-password",
             "api/v1/auth/member/forgot-password",
+            "api/v1/auth/member/validate-otp",
             "api/v1/members/{firstName}/email",
             "/eureka"
 

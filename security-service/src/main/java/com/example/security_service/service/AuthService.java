@@ -20,6 +20,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.HashMap;
+
 @Service
 public class AuthService {
 
@@ -149,6 +154,51 @@ public class AuthService {
         return true;
     }
 
+    public HashMap<Boolean,String> isOtpValid(String email, String otp){
+       HashMap<Boolean, String> otpMap=new HashMap<>();
+       try{
+           OtpUserDetailsModel otpUserDetailsModel=otpUserDetailsRepo.findByEmail(email);
+           if(otpUserDetailsModel==null){
+               System.out.println("email not found");
+               otpMap.put(false,"email not found");
+               return otpMap;
+           }
+           else if(!otpUserDetailsModel.getOtp().equals(otp)){
+               System.out.println("otp is not correct");
+               otpMap.put(false,"otp is not correct");
+               return otpMap;
+           }
+           else if(!validateOtpExpirayTime(otpUserDetailsModel.getExpirayTime())){
+               System.out.println("Otp time has expired");
+               otpMap.put(false,"Otp time has expired");
+               return otpMap;
+           }
+           otpMap.put(true,"otp is validated");
+           otpUserDetailsRepo.deleteOtpRecord(email);
+           return otpMap;
+       }catch(Exception e){
+           throw new RuntimeException(e.getMessage());
+       }
+    }
+
+    public boolean validateOtpExpirayTime(String expirayTimeStr){
+       try{
+           long expirayTimeStamp=Long.parseLong(expirayTimeStr);
+
+           LocalDateTime expirayTime= Instant.ofEpochMilli(expirayTimeStamp)
+                   .atZone(ZoneId.systemDefault())
+                   .toLocalDateTime();
+
+           LocalDateTime now=LocalDateTime.now();
+
+           if(now.isAfter(expirayTime)){
+               return false;
+           }
+           return true;
+       }catch(Exception e){
+           throw new RuntimeException("Error validating expiray time");
+       }
+    }
 
     public String generateToken(String userName){
         System.out.println(userName);

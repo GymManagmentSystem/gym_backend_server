@@ -23,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Optional;
 
 
@@ -88,7 +89,18 @@ public class AuthController {
         }
     }
 
-
+    @PostMapping("/member/validate-otp")
+    public ResponseEntity<String> validateOtp(@RequestBody OtpUserDetails otpUserDetails) {
+        try{
+            HashMap<Boolean,String> isOtpValidated=authService.isOtpValid(otpUserDetails.getEmail(),otpUserDetails.getOtp());
+            if(isOtpValidated.containsKey(false)){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(isOtpValidated.get(false));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(isOtpValidated.get(true));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 
     @PostMapping("/register")
     public String addNewUserCredentials(@RequestBody UserCredentialDto userCredentialDto) {

@@ -39,7 +39,7 @@ public class AuthConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)// Disabling CSRF protection
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("api/v1/auth/token", "api/v1/auth/validate","api/v1/auth/register","/api/v1/auth/member/new-password","/api/v1/auth/member/reset-password","api/v1/members/{firstName}/email","/api/v1/email/simple","api/v1/auth/member/forgot-password").permitAll() // Permit specific endpoints
+                        .requestMatchers("api/v1/auth/token", "api/v1/auth/validate","api/v1/auth/register","/api/v1/auth/member/new-password","/api/v1/auth/member/reset-password","api/v1/members/{firstName}/email","/api/v1/email/simple","api/v1/auth/member/forgot-password","api/v1/auth/member/validate-otp").permitAll() // Permit specific endpoints
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated())// Require authentication for other endpoint
                 .build();

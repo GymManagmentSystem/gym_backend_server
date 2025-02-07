@@ -6,8 +6,11 @@ import com.example.security_service.customResponse.ResponseClass;
 import com.example.security_service.customResponse.SuccessResponse;
 import com.example.security_service.dto.CustomMemberDetails;
 import com.example.security_service.dto.MemberCredentialDto;
+import com.example.security_service.dto.OtpUserDetails;
 import com.example.security_service.dto.UserCredentialDto;
+import com.example.security_service.entity.OtpUserDetailsModel;
 import com.example.security_service.service.AuthService;
+import com.example.security_service.service.OtpGenerator;
 import com.example.security_service.service.PasswordGenerator;
 import com.example.security_service.utility.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,24 +39,33 @@ public class AuthController {
 
 
 
-    @PostMapping("/member/password/new")
+    @PostMapping("/member/new-password")
     public ResponseEntity<String> generateNewMemberCredentials(@RequestParam int userId, @RequestParam String userName) {
         try{
+            System.out.println("user id is : " + userId);
+
             PasswordGenerator passwordGenerator=new PasswordGenerator();
             String generatedPassword=passwordGenerator.generatePassword();
+
             MemberCredentialDto newMemberCredentialDto=new MemberCredentialDto();
+
             newMemberCredentialDto.setPassword(generatedPassword);
             newMemberCredentialDto.setMemberId(userId);
             newMemberCredentialDto.setUserName(userName);
             newMemberCredentialDto.setFirstUser(true);
+
+            System.out.println(newMemberCredentialDto.getMemberId());
+
             authService.addNewMemberCredentials(newMemberCredentialDto);
+
             return ResponseEntity.status(HttpStatus.OK).body(generatedPassword);
         }catch(Exception e){
+            System.out.println(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
-    @PostMapping("member/password/reset")
+    @PostMapping("/member/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody MemberCredentialDto memberCredentialDto) {
         try{
             authService.resetPassword(memberCredentialDto);
@@ -64,6 +76,19 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Password reset failed");
         }
     }
+
+    @PostMapping("/member/forgot-password")
+    public ResponseEntity<String> sendEmail(@RequestBody OtpUserDetails otpUserDetails) {
+        System.out.println("inside the forgot password controller");
+        try{
+            authService.forgetPassword(otpUserDetails);
+            return ResponseEntity.status(HttpStatus.OK).body("Email sent successfully");
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+
 
     @PostMapping("/register")
     public String addNewUserCredentials(@RequestBody UserCredentialDto userCredentialDto) {
@@ -77,7 +102,7 @@ public class AuthController {
     }
 
     @PostMapping("/token")
-   public ResponseEntity<ResponseClass> getToken(@RequestBody UserCredentialDto userCredentialDto) {
+    public ResponseEntity<ResponseClass> getToken(@RequestBody UserCredentialDto userCredentialDto) {
         System.out.println("Before Authentication");
         UserContext.setUserType(userCredentialDto.getUserType());// set the user type to member or staff in thread level
         try {
@@ -106,8 +131,8 @@ public class AuthController {
 
    }
 
-   @GetMapping("/validate")
-   public String validateToken(@RequestParam("token") String token) {
+    @GetMapping("/validate")
+    public String validateToken(@RequestParam("token") String token) {
         System.out.println(token);
         authService.validateToken(token);
         return "Token validated";

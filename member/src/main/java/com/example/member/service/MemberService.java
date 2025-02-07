@@ -110,7 +110,7 @@ public class MemberService {
 
 
             ResponseEntity<String> memberAuthInfo=memberAuthWebClient.post()
-                    .uri(uriBuilder -> uriBuilder.path("/password/new")
+                    .uri(uriBuilder -> uriBuilder.path("/new-password")
                             .queryParam("userId",latestMemberDetails.getMemberId())
                             .queryParam("userName",latestMemberDetails.getFirstName())
                             .build())
@@ -131,7 +131,6 @@ public class MemberService {
             simpleMail.setBody("Your password is: "+memberAuthInfo.getBody()+"You must reset password at first login");
             ResponseEntity<String> emailInfo=emailWebClient.post()
                     .uri(uriBuilder -> uriBuilder.path("/simple").build())
-                    .headers(headers -> headers.setBearerAuth(jwtToken))
                     .bodyValue(simpleMail)
                     .retrieve()
                     .toEntity(String.class)
@@ -255,4 +254,9 @@ public class MemberService {
 
 
     }
+
+    public String getMemberEmail(String firstName){
+        return memberRepo.getMemberEmail(firstName);
+    }
+
 }

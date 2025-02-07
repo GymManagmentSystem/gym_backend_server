@@ -160,5 +160,19 @@ public class MemberController {
 
     }
 
+    @GetMapping("/{firstName}/email")
+    public ResponseEntity<String> getMemberEmailById(@PathVariable("firstName") String firstName){
+        System.out.println("inside the member email controller");
+        try{
+            String email=memberService.getMemberEmail(firstName);
+            if(email.isEmpty()){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email Not Found By Given Name");
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(email);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("something went wrong");
+        }
+    }
+
 
 }

@@ -17,8 +17,9 @@ public class EmailSenderService {
     public void sendSimpleMail(SimpleMail simpleMail) {
         System.out.println("inside the service");
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        System.out.println(simpleMail.getReciver());
         simpleMailMessage.setTo(simpleMail.getReciver());
-        simpleMailMessage.setFrom("Motion Zone");
+        simpleMailMessage.setFrom("ssshashini21@gmail.com");
         simpleMailMessage.setSubject(simpleMail.getSubject());
         simpleMailMessage.setText(simpleMail.getBody());
         mailSender.send(simpleMailMessage);

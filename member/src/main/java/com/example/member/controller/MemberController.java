@@ -8,6 +8,7 @@ import com.example.member.dto.BasicMemberDto;
 import com.example.member.dto.MemberDetailsDto;
 import com.example.member.dto.MemberDto;
 import com.example.member.dto.MemberRegistrationDto;
+import com.example.member.repo.MemberRepo;
 import com.example.member.service.MemberService;
 import com.example.payment.dto.PaymentDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ import java.util.List;
 public class MemberController {
     @Autowired
     private MemberService memberService;
+    @Autowired
+    private MemberRepo memberRepo;
 
     @GetMapping("/")
     public ResponseEntity<? extends MemberResponse> getMembers(){
@@ -162,15 +165,21 @@ public class MemberController {
 
     @GetMapping("/{firstName}/email")
     public ResponseEntity<String> getMemberEmailById(@PathVariable("firstName") String firstName){
-        System.out.println("inside the member email controller");
         try{
+            System.out.println("inside the member email controller");
+            Integer memberExist=memberService.isMemberExists(firstName);
             String email=memberService.getMemberEmail(firstName);
+            if(memberExist==0){
+                System.out.println("user not found...");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid user");
+            }
             if(email.isEmpty()){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email Not Found By Given Name");
             }
             return ResponseEntity.status(HttpStatus.OK).body(email);
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("something went wrong");
+            System.out.println("error is :"+e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 

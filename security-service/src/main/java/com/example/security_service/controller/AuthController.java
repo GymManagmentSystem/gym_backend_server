@@ -85,6 +85,7 @@ public class AuthController {
             authService.forgetPassword(otpUserDetails);
             return ResponseEntity.status(HttpStatus.OK).body("Email sent successfully");
         }catch(Exception e){
+            System.out.println("error is"+e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

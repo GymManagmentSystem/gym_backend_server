@@ -14,11 +14,14 @@ import com.example.security_service.repo.UserCredentials;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -133,25 +136,47 @@ public class AuthService {
     }
 
     public boolean isEmailValid(String name,String email){
-        System.out.println("inside the email checking service");
-        ResponseEntity<String> emailInfo=memberEmailWebClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/{firstName}/email").build(name))
-                .retrieve()
-                .toEntity(String.class)
-                .block();
-        System.out.println("after sending the mail");
-        assert emailInfo!=null;
-        if(emailInfo.getStatusCode()!=HttpStatus.OK){
-            System.out.println(emailInfo.getBody());
-            return false;
-        }
-        if(!email.equals(emailInfo.getBody())){
-            System.out.println("email given by user "+email);
-            System.out.println("email given by db "+emailInfo.getBody());
-            System.out.println("Entered email is not correct");
-            return false;
-        }
-        return true;
+       try{
+           System.out.println("inside the email checking service");
+           ResponseEntity<String> emailInfo=memberEmailWebClient.get()
+                   .uri(uriBuilder -> uriBuilder.path("/{firstName}/email").build(name))
+                   .retrieve()
+                   .onStatus(HttpStatusCode::is4xxClientError, response -> {
+                       System.out.println("Client error occurred: " + response.statusCode());
+                       return response.bodyToMono(String.class)
+                               .flatMap(errorMessage -> {
+                                   throw new RuntimeException(errorMessage);
+                               });
+                   })
+                   .onStatus(HttpStatusCode::is5xxServerError, response -> {
+                       System.out.println("Server error occurred: " + response.statusCode());
+                       return response.createException().flatMap(Mono::error);
+                   })
+                   .toEntity(String.class)
+                   .block();
+           System.out.println("after sending the mail");
+           assert emailInfo!=null;
+           System.out.println("email is :"+emailInfo.getBody());
+           if(emailInfo.getStatusCode()!=HttpStatus.OK){
+               System.out.println("this says: "+emailInfo);
+               return false;
+           }
+           if(!email.equals(emailInfo.getBody())){
+               System.out.println("Email is not matching...");
+               return false;
+           }
+           return true;
+       }catch (WebClientResponseException e) {
+           // Handle specific WebClient exceptions
+           System.out.println("WebClient error: " + e.getResponseBodyAsString());
+           throw new RuntimeException(e.getResponseBodyAsString());
+       }
+       catch(Exception e){
+           System.out.println(e.getMessage());
+           System.out.println(e);
+           throw new RuntimeException(e.getMessage());
+       }
+
     }
 
     public HashMap<Boolean,String> isOtpValid(String email, String otp){

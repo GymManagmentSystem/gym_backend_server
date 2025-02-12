@@ -15,7 +15,7 @@ public interface MemberCredentialsRepo extends JpaRepository<MemberCredentialsMo
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE member_credentials_model SET password=:password WHERE user_name=:userName",nativeQuery = true)
+    @Query(value = "UPDATE member_credentials_model SET password=:password,is_first_user=false WHERE user_name=:userName",nativeQuery = true)
     Integer resetPassword(@Param("password") String password,@Param("userName") String userName);
 
 }

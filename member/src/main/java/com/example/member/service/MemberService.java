@@ -256,7 +256,12 @@ public class MemberService {
     }
 
     public String getMemberEmail(String firstName){
+        System.out.println("Inside getMemberEmail");
         return memberRepo.getMemberEmail(firstName);
+    }
+
+    public Integer isMemberExists(String firstName){
+        return memberRepo.memberExistsByName(firstName);
     }
 
 }

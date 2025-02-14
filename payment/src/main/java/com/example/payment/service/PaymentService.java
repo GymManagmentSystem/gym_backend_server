@@ -111,6 +111,7 @@ public class PaymentService {
                 int year=((Number)record[2]).intValue();
                 return new PaymentMonthDto(memberCount,month,year);
             }).toList();
+            System.out.println("MonthlyPackageCount :"+paymentMonthDtoList);
             return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<PaymentMonthDto>(paymentMonthDtoList));
         }catch(Exception e){
             System.out.println(e.getMessage());
@@ -129,6 +130,7 @@ public class PaymentService {
                 monthlyIncomeDto.setMonth(((String)row[2]));
                 monthlyIncomeDtoList.add(monthlyIncomeDto);
             }
+            System.out.println("MonthlyIncome :"+monthlyIncomeDtoList);
             return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<MonthlyIncomeDto>(monthlyIncomeDtoList));
         }catch(Exception e){
             System.out.println(e.getMessage());

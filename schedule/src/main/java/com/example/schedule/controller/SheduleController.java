@@ -6,6 +6,7 @@ import com.example.schedule.customResponse.SuccessResponse;
 import com.example.schedule.dto.ScheduleExerciseDto;
 import com.example.schedule.service.SchdeuleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,11 +41,17 @@ public class SheduleController {
     }
 
     @GetMapping(value = "/current/{memberId}")
-    public ResponseEntity<ScheduleResponse> getCurrentSchedule(@PathVariable("memberId") String memberId) {
+    public ResponseEntity<ScheduleResponse> getCurrentSchedule(@PathVariable("memberId") String memberId, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
+        String jwtToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            jwtToken = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Authorization header is missing or invalid"));
+        }
         try{
             //if isActive = 1 it shows current schedules
             int id=Integer.parseInt(memberId);
-            List<ScheduleExerciseDto> scheduleList=schdeuleService.getSchedulesById(id,true);
+            List<ScheduleExerciseDto> scheduleList=schdeuleService.getSchedulesById(id,true,jwtToken);
             return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<ScheduleExerciseDto>(scheduleList));
         }catch(Exception e){
             System.out.println("Exception is "+e.getMessage());
@@ -53,11 +60,19 @@ public class SheduleController {
     }
 
     @GetMapping(value = "/past/{memberId}")
-    public ResponseEntity<ScheduleResponse> getPastHistorySchedule(@PathVariable("memberId") String memberId) {
+    public ResponseEntity<ScheduleResponse> getPastHistorySchedule(@PathVariable("memberId") String memberId,@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
+        String jwtToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            jwtToken = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Authorization header is missing or invalid"));
+        }
+
+
         try{
             //if isActive = 0 it shows current pastSchedules
             int id=Integer.parseInt(memberId);
-            List<ScheduleExerciseDto> scheduleList=schdeuleService.getSchedulesById(id,false);
+            List<ScheduleExerciseDto> scheduleList=schdeuleService.getSchedulesById(id,false,jwtToken);
             return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<ScheduleExerciseDto>(scheduleList));
         }catch(Exception e){
             System.out.println("Exception is "+e.getMessage());

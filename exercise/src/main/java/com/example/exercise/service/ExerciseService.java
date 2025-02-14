@@ -21,16 +21,20 @@ import java.util.List;
 
 @Service
 public class ExerciseService {
-    @Autowired
-    ExerciseRepo exerciseRepo;
 
     @Autowired
-    ModelMapper modelMapper;
+    private ExerciseRepo exerciseRepo;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public ExerciseService(){}
 
     public ResponseEntity<ExerciseResponse> getAllExercises() {
         try {
             List<ExerciseModel> exercisesList = exerciseRepo.findAll();
             List <ExerciseDto> responseExerciseList=modelMapper.map(exercisesList, new TypeToken<List<ExerciseDto>>() {}.getType());
+            System.out.println("exercise list is"+responseExerciseList);
             return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<ExerciseDto>(responseExerciseList));
         } catch (Exception e) {
             System.out.println("Error is in controller: "+e.getMessage());

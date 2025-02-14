@@ -12,6 +12,7 @@ import java.util.List;
 public class ExerciseDto {
     private String exerciseName;
     private String reps;
+    private String exerciseUrl;
     private int sets;
     private int duration;
 }

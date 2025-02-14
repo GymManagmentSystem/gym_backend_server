@@ -1,4 +1,6 @@
 package com.example.schedule.service;
+import com.example.exercise.customResponse.ExerciseResponse;
+import com.example.exercise.customResponse.SuccessResponse;
 import com.example.schedule.dto.ExerciseDto;
 import com.example.schedule.dto.ScheduleDto;
 import com.example.schedule.dto.ScheduleExerciseDto;
@@ -9,23 +11,34 @@ import com.example.schedule.repo.ScheduleRepo;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class SchdeuleService {
-    @Autowired
-    ScheduleRepo scheduleRepo;
+
+    private WebClient exerciseWebClient;
 
     @Autowired
-    ScheduleExerciseRepo scheduleExerciseRepo;
+    private ScheduleRepo scheduleRepo;
 
     @Autowired
-    ModelMapper modelMapper;
+    private ScheduleExerciseRepo scheduleExerciseRepo;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public SchdeuleService(WebClient ExerciseWebClient){
+        this.exerciseWebClient = ExerciseWebClient;
+    }
+
 
     @Transactional(rollbackFor = Exception.class)
     public ScheduleExerciseDto addNewSchedule(ScheduleExerciseDto scheduleExerciseDto) {
@@ -76,18 +89,27 @@ public class SchdeuleService {
 
     }
 
-    public List<ScheduleExerciseDto> getSchedulesById(Integer memberId,boolean isActive) {
+    public List<ScheduleExerciseDto> getSchedulesById(Integer memberId,boolean isActive,String jwtToken) {
         try{
             List<ScheduleExerciseDto> scheduleExerciseList=new ArrayList<>();
             List<ScheduleModel> currentScheduleList=scheduleRepo.getSchedulesById(memberId,isActive);
+            List<com.example.exercise.dto.ExerciseDto> exerciseList=getExercisesList(jwtToken);
+
             for(ScheduleModel scheduleModel:currentScheduleList){
+
                 ScheduleExerciseDto scheduleExerciseDto=new ScheduleExerciseDto();
                 scheduleExerciseDto.setSchedule(modelMapper.map(scheduleModel, ScheduleDto.class));
                 List<ScheduleExerciseModel> scheduleExerciseModel=scheduleExerciseRepo.getExercisesListByScheduleId(scheduleModel.getScheduleId());
                 scheduleExerciseDto.setExerciseList(modelMapper.map(scheduleExerciseModel,new TypeToken<List<ExerciseDto>>(){}.getType()));
+
+                for(ExerciseDto exercise:scheduleExerciseDto.getExerciseList()){
+
+                    exercise.setExerciseUrl(getExerciseImageUrlByName(exercise.getExerciseName(),exerciseList));
+                }
                 scheduleExerciseList.add(scheduleExerciseDto);
             }
             System.out.println("Schedule exercise list:"+memberId+" : "+scheduleExerciseList);
+            getExercisesList(jwtToken);
             return scheduleExerciseList;
 
         }catch(Exception e){
@@ -96,7 +118,33 @@ public class SchdeuleService {
         }
     }
 
-    
+
+    public List<com.example.exercise.dto.ExerciseDto> getExercisesList(String jwtToken){
+        try{
+            ResponseEntity<SuccessResponse<com.example.exercise.dto.ExerciseDto>> paymentInfo = exerciseWebClient.get()
+                    .uri(uriBuilder -> uriBuilder.path("/exercises/").build())
+                    .headers(headers -> headers.setBearerAuth(jwtToken))
+                    .retrieve()
+                    .toEntity(new ParameterizedTypeReference<SuccessResponse<com.example.exercise.dto.ExerciseDto>>() {})
+                    .block();
+            assert paymentInfo.getBody() != null;
+            return paymentInfo.getBody().getDataList();
+        }catch(Exception e){
+            System.out.println("error is sending http web client to exercise ms");
+            throw new RuntimeException("Error in loading exercises");
+
+        }
+
+    }
+
+    public String getExerciseImageUrlByName(String exerciseName, List<com.example.exercise.dto.ExerciseDto> exerciseList){
+        for(com.example.exercise.dto.ExerciseDto exerciseDto:exerciseList){
+            if(exerciseDto.getExerciseName().equals(exerciseName)){
+                return exerciseDto.getExerciseImageUrl();
+            }
+        }
+        return "No url found";
+    }
 
 
 }

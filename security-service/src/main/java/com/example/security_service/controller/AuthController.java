@@ -128,8 +128,9 @@ public class AuthController {
             if(userCredentialDto.getUserType().equals("MEMBER")){
                 CustomMemberDetails userDetails = (CustomMemberDetails) authentication.getPrincipal();
                 // Extract individual values
+
                 String isFirstUser = userDetails.isFirstUser()?"New Member":"Existing Member";
-                return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse("MemberType: "+isFirstUser,token));
+                return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse("MemberType: "+isFirstUser+","+"MemberId: "+userDetails.getMemberId(),token));
             }
             return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse("login Successful",token));
 

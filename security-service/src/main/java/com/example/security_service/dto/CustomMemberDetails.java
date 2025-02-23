@@ -17,11 +17,13 @@ public class CustomMemberDetails implements UserDetails {
     private String userName;
     private String password;
     private boolean isFirstUser;
+    private int memberId;
 
     public CustomMemberDetails(MemberCredentialsModel memberCredentialsModel) {
         this.userName = memberCredentialsModel.getUserName();
         this.password = memberCredentialsModel.getPassword();
         this.isFirstUser = memberCredentialsModel.isFirstUser();
+        this.memberId = memberCredentialsModel.getMemberId();
     }
 
     @Override

@@ -103,7 +103,6 @@ public class SchdeuleService {
                 scheduleExerciseDto.setExerciseList(modelMapper.map(scheduleExerciseModel,new TypeToken<List<ExerciseDto>>(){}.getType()));
 
                 for(ExerciseDto exercise:scheduleExerciseDto.getExerciseList()){
-
                     exercise.setExerciseUrl(getExerciseImageUrlByName(exercise.getExerciseName(),exerciseList));
                 }
                 scheduleExerciseList.add(scheduleExerciseDto);

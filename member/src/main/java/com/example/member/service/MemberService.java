@@ -13,6 +13,7 @@ import com.example.payment.dto.PaymentDto;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,9 @@ import java.util.Optional;
 @Service
 public class MemberService {
 
+
+
+
     private final WebClient paymentWebClient;
 
     private final WebClient memberAuthWebClient;
@@ -40,6 +44,9 @@ public class MemberService {
 
     @Autowired
     private MemberRepo memberRepo;
+
+    @Autowired
+    private FireBaseService fireBaseService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -266,7 +273,16 @@ public class MemberService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public String uploadProfileImage(int memberId, String imageUrl){
+    public String uploadProfileImage(int memberId,MultipartFile imageFile){
+        try{
+            String imageUrl=fireBaseService.upload(imageFile,memberId);
+            return saveImageUrl(memberId,imageUrl);
+        }catch(Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public String saveImageUrl(int memberId,String imageUrl){
         try{
             Integer isProfileUpdated=memberRepo.updateMemberProfileImage(memberId,imageUrl);
             if(isProfileUpdated==1){

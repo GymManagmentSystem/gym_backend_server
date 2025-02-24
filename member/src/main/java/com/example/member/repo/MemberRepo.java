@@ -35,7 +35,13 @@ Integer updateMemberDetails(@Param("member") MemberModel member);
 
 @Query(value = "SELECT email FROM member_model WHERE first_name=?1",nativeQuery = true)
 String getMemberEmail(String firstName);
+
+@Modifying
+@Query(value = "UPDATE member_model SET profile_image_url=:#{#profileImageUrl}  WHERE member_id=:#{#memberId}", nativeQuery = true)
+Integer updateMemberProfileImage(int memberId, String profileImageUrl);
 }
+
+
 
 
 

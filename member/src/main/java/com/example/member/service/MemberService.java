@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -262,6 +263,21 @@ public class MemberService {
 
     public Integer isMemberExists(String firstName){
         return memberRepo.memberExistsByName(firstName);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public String uploadProfileImage(int memberId, String imageUrl){
+        try{
+            Integer isProfileUpdated=memberRepo.updateMemberProfileImage(memberId,imageUrl);
+            if(isProfileUpdated==1){
+                return imageUrl;
+            }
+            else{
+                throw new RuntimeException("Error in updating profile image");
+            }
+        }catch(Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
 }

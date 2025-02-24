@@ -9,6 +9,7 @@ import com.example.member.dto.MemberDetailsDto;
 import com.example.member.dto.MemberDto;
 import com.example.member.dto.MemberRegistrationDto;
 import com.example.member.repo.MemberRepo;
+import com.example.member.service.FileUploadService;
 import com.example.member.service.MemberService;
 import com.example.payment.dto.PaymentDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,8 +27,10 @@ import java.util.List;
 public class MemberController {
     @Autowired
     private MemberService memberService;
+
     @Autowired
-    private MemberRepo memberRepo;
+    private FileUploadService fileUploadService;
+
 
     @GetMapping("/")
     public ResponseEntity<? extends MemberResponse> getMembers(){
@@ -181,6 +185,21 @@ public class MemberController {
             System.out.println("error is :"+e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+    }
+
+    @PostMapping("/{memberId}/uploadFile")
+    public ResponseEntity<String> uploadProfileImage(@PathVariable("memberId") Integer memberId,@RequestParam("file") MultipartFile profileImage){
+        try{
+            System.out.println("inside the member upload profile image controller");
+            System.out.println("member id"+memberId);
+            System.out.println("profile image"+profileImage);
+            String filePath= fileUploadService.saveProfileImage(profileImage);
+            return ResponseEntity.status(HttpStatus.OK).body(memberService.uploadProfileImage(memberId,filePath));
+        }catch(Exception e){
+            System.out.println("error is :"+e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+
     }
 
 

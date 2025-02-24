@@ -30,5 +30,6 @@ public class MemberModel {
     private String dateRegistered;
     private int weight;
     private int height;
+    private String profileImageUrl;
 
 }

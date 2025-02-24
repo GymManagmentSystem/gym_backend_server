@@ -21,4 +21,5 @@ public class MemberDto {
     private String dateRegistered;
     private int weight;
     private int height;
+    private String profileImageUrl;
 }

@@ -181,6 +181,15 @@ public class MemberController {
         }
     }
 
+    @GetMapping("/{id}/exist")
+    public ResponseEntity<MemberResponse> getMemberExistsById(@PathVariable("id") String id){
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<Boolean>(memberService.isMemberExistById(id)));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("Internal Server Error"));
+        }
+    }
+
     @PostMapping("/{memberId}/uploadFile")
     public ResponseEntity<String> uploadProfileImage(@PathVariable("memberId") Integer memberId,@RequestParam("file") MultipartFile profileImage){
         try{

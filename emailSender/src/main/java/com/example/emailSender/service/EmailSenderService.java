@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailSenderService {
 
+    @Value("${spring.mail.username}")
+    private String senderEmail;
+
     @Autowired
     private JavaMailSender mailSender;
 
@@ -19,7 +22,7 @@ public class EmailSenderService {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         System.out.println(simpleMail.getReciver());
         simpleMailMessage.setTo(simpleMail.getReciver());
-        simpleMailMessage.setFrom("ssshashini21@gmail.com");
+        simpleMailMessage.setFrom(senderEmail);
         simpleMailMessage.setSubject(simpleMail.getSubject());
         simpleMailMessage.setText(simpleMail.getBody());
         mailSender.send(simpleMailMessage);

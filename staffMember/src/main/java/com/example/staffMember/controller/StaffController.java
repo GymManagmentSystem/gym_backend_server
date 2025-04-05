@@ -25,7 +25,7 @@ public class StaffController {
     @Autowired
     private ModelMapper modelMapper;
 
-    @PostMapping( "/")
+    @PostMapping( "/new")
     public ResponseEntity<StaffMemberResponse> addStaffMember(@RequestBody StaffMemberDto staffMemberDto) {
         try{
            StaffMemberDto savedMemberDeatils= staffMemberService.addStaffMember(staffMemberDto);

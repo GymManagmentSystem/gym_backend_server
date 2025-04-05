@@ -296,4 +296,13 @@ public class MemberService {
         }
     }
 
+    public boolean isMemberExistById(String memberId){
+        try{
+            return memberRepo.existsById(Integer.parseInt(memberId));
+        }catch(Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+
+    }
+
 }
